@@ -17,3 +17,4 @@ C:\Users\ferna\Desenvolvimento\compiladorRiqual\compiladorRiqual\obj\Debug\net8.
 C:\Users\ferna\Desenvolvimento\compiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\compiladorRiqual.pdb
 C:\Users\ferna\Desenvolvimento\compiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\compiladorRiqual.genruntimeconfig.cache
 C:\Users\ferna\Desenvolvimento\compiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\ref\compiladorRiqual.dll
+C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\compiladorRiqual.sourcelink.json

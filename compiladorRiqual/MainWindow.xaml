@@ -1,98 +1,72 @@
 ﻿<Window x:Class="DocumentUploader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Upload de Documentos - Revista Digital" 
-        Height="750" 
+        Title="Revista Digital - Upload de Documentos" 
+        Height="700" 
         Width="900"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize"
-        Background="Transparent"
-        AllowsTransparency="True"
-        WindowStyle="None">
+        ResizeMode="CanResize"
+        MinHeight="600"
+        MinWidth="800"
+        Background="#F8F9FA">
 
     <Window.Resources>
-        <!-- Definição de cores e gradientes -->
+        <!-- Definição de cores -->
         <SolidColorBrush x:Key="PrimaryBrush" Color="#6C8DC5"/>
-        <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#5A7BB8"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush" Color="#E8F4FD"/>
         <SolidColorBrush x:Key="AccentBrush" Color="#F5F27C"/>
-        <SolidColorBrush x:Key="AccentDarkBrush" Color="#E8E564"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#27AE60"/>
+        <SolidColorBrush x:Key="SuccessLightBrush" Color="#E8F5E8"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="#F39C12"/>
+        <SolidColorBrush x:Key="WarningLightBrush" Color="#FFF5E6"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#E74C3C"/>
+        <SolidColorBrush x:Key="ErrorLightBrush" Color="#FFE6E6"/>
         <SolidColorBrush x:Key="TextBrush" Color="#2C3E50"/>
         <SolidColorBrush x:Key="TextLightBrush" Color="#7F8C8D"/>
         <SolidColorBrush x:Key="BorderBrush" Color="#E0E6ED"/>
-        <SolidColorBrush x:Key="SuccessBrush" Color="#27AE60"/>
-        <SolidColorBrush x:Key="ErrorBrush" Color="#E74C3C"/>
 
-        <!-- Gradiente de fundo principal -->
-        <LinearGradientBrush x:Key="MainBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#F8F9FA" Offset="0"/>
-            <GradientStop Color="#E8F4FD" Offset="0.5"/>
-            <GradientStop Color="#F0F8FF" Offset="1"/>
-        </LinearGradientBrush>
+        <!-- Style para cards modernos -->
+        <Style x:Key="ModernCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#E0E6ED" 
+                                    Direction="270" 
+                                    ShadowDepth="2" 
+                                    BlurRadius="8" 
+                                    Opacity="0.3"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- Gradiente para cards -->
-        <LinearGradientBrush x:Key="CardBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="White" Offset="0"/>
-            <GradientStop Color="#FDFDFD" Offset="1"/>
-        </LinearGradientBrush>
-
-        <!-- Gradiente para botão principal -->
-        <LinearGradientBrush x:Key="PrimaryGradientBrush" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#6C8DC5" Offset="0"/>
-            <GradientStop Color="#5A7BB8" Offset="1"/>
-        </LinearGradientBrush>
-
-        <!-- Gradiente para botões de seleção -->
-        <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#F5F27C" Offset="0"/>
-            <GradientStop Color="#F0ED70" Offset="1"/>
-        </LinearGradientBrush>
-
-        <!-- Style para botões principais -->
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource PrimaryGradientBrush}"/>
+        <!-- Style para botões modernos -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="25,15"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="12"
+                                CornerRadius="6"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
-                            <Border.Effect>
-                                <DropShadowEffect Color="#6C8DC5" 
-                                                Direction="270" 
-                                                ShadowDepth="4" 
-                                                BlurRadius="12" 
-                                                Opacity="0.4"/>
-                            </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" 
                                             VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#7A9BD3" Offset="0"/>
-                                            <GradientStop Color="#6889C6" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="Background" Value="#5A7BB8"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#5A7BB8" Offset="0"/>
-                                            <GradientStop Color="#4A6BA8" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="Background" Value="#4A6BA8"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Background" Value="#BDC3C7"/>
@@ -104,508 +78,270 @@
             </Setter>
         </Style>
 
-        <!-- Style para botões de seleção -->
-        <Style x:Key="SelectButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}"/>
+        <!-- Style para botões secundários -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Padding" Value="16,10"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="8"
+                                CornerRadius="6"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
-                            <Border.Effect>
-                                <DropShadowEffect Color="#F5F27C" 
-                                                Direction="270" 
-                                                ShadowDepth="3" 
-                                                BlurRadius="8" 
-                                                Opacity="0.3"/>
-                            </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" 
                                             VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#F8F580" Offset="0"/>
-                                            <GradientStop Color="#F3F074" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="Background" Value="#F0ED70"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#F0ED70" Offset="0"/>
-                                            <GradientStop Color="#E8E564" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="Background" Value="#E8E564"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Style para TextBlocks de arquivo -->
-        <Style x:Key="FilePathStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
-        </Style>
-
-        <!-- Style para Cards com gradiente -->
-        <Style x:Key="CardStyle" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="16"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="#C0C8D4" 
-                                    Direction="270" 
-                                    ShadowDepth="6" 
-                                    BlurRadius="20" 
-                                    Opacity="0.25"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Style para cards de ficheiros -->
-        <Style x:Key="FileCardStyle" TargetType="Border">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="#E0E6ED" 
-                                    Direction="270" 
-                                    ShadowDepth="4" 
-                                    BlurRadius="12" 
-                                    Opacity="0.4"/>
                 </Setter.Value>
             </Setter>
         </Style>
     </Window.Resources>
 
-    <!-- Border principal da janela -->
-    <Border Background="{StaticResource MainBackgroundBrush}" 
-            CornerRadius="20"
-            BorderBrush="{StaticResource PrimaryBrush}"
-            BorderThickness="2">
-        <Border.Effect>
-            <DropShadowEffect Color="#6C8DC5" 
-                            Direction="270" 
-                            ShadowDepth="8" 
-                            BlurRadius="25" 
-                            Opacity="0.3"/>
-        </Border.Effect>
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <Grid Margin="40">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Style="{StaticResource ModernCardStyle}" 
+                Padding="30,25"
+                Margin="0,0,0,30">
+            <StackPanel>
+                <TextBlock Text="📚 Upload de Documentos" 
+                          FontSize="28" 
+                          FontWeight="Bold" 
+                          Foreground="{StaticResource PrimaryBrush}"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,10"/>
+                <TextBlock Text="Carregue os seguintes documentos para proseguir com a criação da revista!" 
+                          FontSize="15" 
+                          Foreground="{StaticResource TextLightBrush}"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,15"/>
+                <Border Background="{StaticResource AccentBrush}" 
+                        CornerRadius="15" 
+                        Padding="12,6"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="Formato obrigatório: .docx" 
+                              FontSize="12" 
+                              FontWeight="SemiBold"
+                              Foreground="{StaticResource TextBrush}"/>
+                </Border>
+            </StackPanel>
+        </Border>
 
-            <!-- Botão de fechar -->
-            <Button Grid.Row="0" 
-                    Content="×" 
-                    HorizontalAlignment="Right" 
-                    VerticalAlignment="Top"
-                    Width="30" 
-                    Height="30"
-                    Background="{StaticResource ErrorBrush}"
-                    Foreground="White"
-                    BorderThickness="0"
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    Click="CloseWindow_Click">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="15">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+        <!-- Content Area -->
+        <Border Grid.Row="1" 
+                Style="{StaticResource ModernCardStyle}"
+                Padding="30">
+            <StackPanel>
+
+                <!-- Documento 1 - Capa -->
+                <Border Background="{StaticResource PrimaryLightBrush}" 
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,0,0,20"
+                        BorderBrush="{StaticResource PrimaryBrush}"
+                        BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" 
+                                Background="{StaticResource PrimaryBrush}"
+                                CornerRadius="20" 
+                                Width="40" 
+                                Height="40" 
+                                Margin="0,0,15,0">
+                            <TextBlock Text="1" 
+                                      Foreground="White" 
+                                      FontSize="16" 
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
                         </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#C0392B"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
 
-            <!-- Header -->
-            <Border Grid.Row="1" 
-                    Style="{StaticResource CardStyle}" 
-                    Margin="0,0,0,30"
-                    Padding="40,30">
-                <StackPanel>
-                    <TextBlock Text="📚 Revista Digital - Upload de Documentos" 
-                              FontSize="32" 
-                              FontWeight="Bold" 
-                              Foreground="{StaticResource PrimaryBrush}"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,15"/>
-                    <TextBlock Text="Carregue os 3 documentos obrigatórios para criar sua revista" 
-                              FontSize="16" 
-                              Foreground="{StaticResource TextLightBrush}"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,10"/>
-                    <Border Background="{StaticResource AccentBrush}" 
-                            CornerRadius="20" 
-                            Padding="15,8"
-                            HorizontalAlignment="Center">
-                        <TextBlock Text="✓ Todos os documentos são obrigatórios" 
-                                  FontSize="12" 
-                                  FontWeight="SemiBold"
-                                  Foreground="{StaticResource TextBrush}"/>
-                    </Border>
-                </StackPanel>
-            </Border>
-
-            <!-- Content Area -->
-            <Border Grid.Row="2" 
-                    Style="{StaticResource CardStyle}"
-                    Padding="40,35">
-                <StackPanel>
-
-                    <!-- Documento 1 - Capa -->
-                    <Border Style="{StaticResource FileCardStyle}" 
-                            Padding="25,20" 
-                            Margin="0,0,0,25">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Border Grid.Column="0" 
-                                    CornerRadius="25" 
-                                    Width="50" 
-                                    Height="50" 
-                                    Margin="0,0,20,0">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#6C8DC5" Offset="0"/>
-                                        <GradientStop Color="#5A7BB8" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Border.Effect>
-                                    <DropShadowEffect Color="#6C8DC5" 
-                                                    Direction="270" 
-                                                    ShadowDepth="3" 
-                                                    BlurRadius="8" 
-                                                    Opacity="0.4"/>
-                                </Border.Effect>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="📄" 
-                                              FontSize="18" 
-                                              HorizontalAlignment="Center"/>
-                                    <TextBlock Text="1" 
-                                              Foreground="White" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"
-                                              HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-
-                            <StackPanel Grid.Column="1" 
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,20,0">
-                                <TextBlock Text="📄 CAPA DA REVISTA" 
-                                          FontSize="18" 
-                                          FontWeight="Bold"
-                                          Foreground="{StaticResource PrimaryBrush}"
-                                          Margin="0,0,0,8"/>
-                                <TextBlock x:Name="txtFile1" 
-                                          Text="Selecione o documento da capa (obrigatório)" 
-                                          Style="{StaticResource FilePathStyle}"
-                                          FontSize="13"
-                                          FontWeight="SemiBold"
-                                          Foreground="#95A5A6"
-                                          Margin="0,0,0,8"/>
-                                <Border Background="#F8F9FA" 
-                                        CornerRadius="6" 
-                                        Padding="12,8"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        BorderThickness="1">
-                                    <StackPanel>
-                                        <TextBlock Text="📋 O que deve conter:" 
-                                                  FontSize="12" 
-                                                  FontWeight="Bold"
-                                                  Foreground="{StaticResource PrimaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                        <TextBlock Text="• Título da revista e número da edição" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"
-                                                  Margin="0,0,0,2"/>
-                                        <TextBlock Text="• Design visual e logótipo da revista" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"
-                                                  Margin="0,0,0,2"/>
-                                        <TextBlock Text="• Data de publicação e informações gerais" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <Button Grid.Column="2" 
-                                    x:Name="btnSelect1"
-                                    Content="📁 Selecionar Capa"
-                                    Style="{StaticResource SelectButtonStyle}"
-                                    Click="SelectFile1_Click"/>
-                        </Grid>
-                    </Border>
-
-                    <!-- Documento 2 - Conselho Editorial -->
-                    <Border Style="{StaticResource FileCardStyle}" 
-                            Padding="25,20" 
-                            Margin="0,0,0,25">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Border Grid.Column="0" 
-                                    CornerRadius="25" 
-                                    Width="50" 
-                                    Height="50" 
-                                    Margin="0,0,20,0">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#6C8DC5" Offset="0"/>
-                                        <GradientStop Color="#5A7BB8" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Border.Effect>
-                                    <DropShadowEffect Color="#6C8DC5" 
-                                                    Direction="270" 
-                                                    ShadowDepth="3" 
-                                                    BlurRadius="8" 
-                                                    Opacity="0.4"/>
-                                </Border.Effect>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="👥" 
-                                              FontSize="18" 
-                                              HorizontalAlignment="Center"/>
-                                    <TextBlock Text="2" 
-                                              Foreground="White" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"
-                                              HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-
-                            <StackPanel Grid.Column="1" 
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,20,0">
-                                <TextBlock Text="👥 CONSELHO EDITORIAL" 
-                                          FontSize="18" 
-                                          FontWeight="Bold"
-                                          Foreground="{StaticResource PrimaryBrush}"
-                                          Margin="0,0,0,8"/>
-                                <TextBlock x:Name="txtFile2" 
-                                          Text="Selecione o documento do conselho editorial (obrigatório)" 
-                                          Style="{StaticResource FilePathStyle}"
-                                          FontSize="13"
-                                          FontWeight="SemiBold"
-                                          Foreground="#95A5A6"
-                                          Margin="0,0,0,8"/>
-                                <Border Background="#F8F9FA" 
-                                        CornerRadius="6" 
-                                        Padding="12,8"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        BorderThickness="1">
-                                    <StackPanel>
-                                        <TextBlock Text="📋 O que deve conter:" 
-                                                  FontSize="12" 
-                                                  FontWeight="Bold"
-                                                  Foreground="{StaticResource PrimaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                        <TextBlock Text="• Lista dos membros do conselho editorial" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"
-                                                  Margin="0,0,0,2"/>
-                                        <TextBlock Text="• Cargos, formações e afiliações institucionais" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"
-                                                  Margin="0,0,0,2"/>
-                                        <TextBlock Text="• Contactos e informações de cada membro" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <Button Grid.Column="2" 
-                                    x:Name="btnSelect2"
-                                    Content="👥 Selecionar Conselho"
-                                    Style="{StaticResource SelectButtonStyle}"
-                                    Click="SelectFile2_Click"/>
-                        </Grid>
-                    </Border>
-
-                    <!-- Documento 3 - Editorial -->
-                    <Border Style="{StaticResource FileCardStyle}" 
-                            Padding="25,20" 
-                            Margin="0,0,0,25">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Border Grid.Column="0" 
-                                    CornerRadius="25" 
-                                    Width="50" 
-                                    Height="50" 
-                                    Margin="0,0,20,0">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#6C8DC5" Offset="0"/>
-                                        <GradientStop Color="#5A7BB8" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Border.Effect>
-                                    <DropShadowEffect Color="#6C8DC5" 
-                                                    Direction="270" 
-                                                    ShadowDepth="3" 
-                                                    BlurRadius="8" 
-                                                    Opacity="0.4"/>
-                                </Border.Effect>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="✍️" 
-                                              FontSize="18" 
-                                              HorizontalAlignment="Center"/>
-                                    <TextBlock Text="3" 
-                                              Foreground="White" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"
-                                              HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-
-                            <StackPanel Grid.Column="1" 
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,20,0">
-                                <TextBlock Text="✍️ EDITORIAL" 
-                                          FontSize="18" 
-                                          FontWeight="Bold"
-                                          Foreground="{StaticResource PrimaryBrush}"
-                                          Margin="0,0,0,8"/>
-                                <TextBlock x:Name="txtFile3" 
-                                          Text="Selecione o documento do editorial (obrigatório)" 
-                                          Style="{StaticResource FilePathStyle}"
-                                          FontSize="13"
-                                          FontWeight="SemiBold"
-                                          Foreground="#95A5A6"
-                                          Margin="0,0,0,8"/>
-                                <Border Background="#F8F9FA" 
-                                        CornerRadius="6" 
-                                        Padding="12,8"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        BorderThickness="1">
-                                    <StackPanel>
-                                        <TextBlock Text="📋 O que deve conter:" 
-                                                  FontSize="12" 
-                                                  FontWeight="Bold"
-                                                  Foreground="{StaticResource PrimaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                        <TextBlock Text="• Texto principal do editorial da edição" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"
-                                                  Margin="0,0,0,2"/>
-                                        <TextBlock Text="• Reflexões sobre o tema da revista" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"
-                                                  Margin="0,0,0,2"/>
-                                        <TextBlock Text="• Assinatura do editor responsável" 
-                                                  FontSize="11" 
-                                                  Foreground="{StaticResource TextBrush}"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <Button Grid.Column="2" 
-                                    x:Name="btnSelect3"
-                                    Content="✍️ Selecionar Editorial"
-                                    Style="{StaticResource SelectButtonStyle}"
-                                    Click="SelectFile3_Click"/>
-                        </Grid>
-                    </Border>
-
-                    <!-- Status Area -->
-                    <Border x:Name="statusBorder"
-                            Background="#FFE6E6" 
-                            BorderBrush="{StaticResource ErrorBrush}"
-                            BorderThickness="2"
-                            CornerRadius="12" 
-                            Padding="25,15"
-                            Margin="0,10,0,0">
-                        <Border.Effect>
-                            <DropShadowEffect Color="#E74C3C" 
-                                            Direction="270" 
-                                            ShadowDepth="2" 
-                                            BlurRadius="6" 
-                                            Opacity="0.2"/>
-                        </Border.Effect>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="statusIcon"
-                                      Text="⚠️" 
-                                      FontSize="18" 
-                                      Margin="0,0,15,0"/>
-                            <StackPanel>
-                                <TextBlock x:Name="txtStatus" 
-                                          Text="Selecione todos os 3 documentos obrigatórios para prosseguir"
-                                          FontSize="14"
-                                          FontWeight="SemiBold"
-                                          Foreground="{StaticResource ErrorBrush}"/>
-                                <TextBlock x:Name="txtStatusDetail"
-                                          Text="Faltam: Capa, Conselho Editorial e Editorial"
-                                          FontSize="12"
-                                          Foreground="{StaticResource TextLightBrush}"
-                                          Margin="0,2,0,0"/>
-                            </StackPanel>
+                        <StackPanel Grid.Column="1" 
+                                   VerticalAlignment="Center">
+                            <TextBlock Text="📄 Capa da Revista" 
+                                      FontSize="16" 
+                                      FontWeight="SemiBold"
+                                      Foreground="{StaticResource PrimaryBrush}"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtFile1" 
+                                      Text="Documento com o design e informações da capa" 
+                                      FontSize="13"
+                                      Foreground="{StaticResource TextLightBrush}"/>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
-            </Border>
 
-            <!-- Footer com botão de ação -->
-            <Border Grid.Row="3" 
-                    Margin="0,30,0,0">
-                <Button x:Name="btnProceed"
-                        Content="🚀 Criar Revista Digital"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        FontSize="18"
-                        Padding="40,18"
-                        HorizontalAlignment="Center"
-                        IsEnabled="False"
-                        Click="Proceed_Click"/>
-            </Border>
-        </Grid>
-    </Border>
+                        <Button Grid.Column="2" 
+                                x:Name="btnSelect1"
+                                Content=" Selecionar "
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Click="SelectFile1_Click"/>
+                    </Grid>
+                </Border>
+
+                <!-- Documento 2 - Conselho Editorial -->
+                <Border Background="{StaticResource SuccessLightBrush}" 
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,0,0,20"
+                        BorderBrush="{StaticResource SuccessBrush}"
+                        BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" 
+                                Background="{StaticResource SuccessBrush}"
+                                CornerRadius="20" 
+                                Width="40" 
+                                Height="40" 
+                                Margin="0,0,15,0">
+                            <TextBlock Text="2" 
+                                      Foreground="White" 
+                                      FontSize="16" 
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" 
+                                   VerticalAlignment="Center">
+                            <TextBlock Text="👥 Conselho Editorial" 
+                                      FontSize="16" 
+                                      FontWeight="SemiBold"
+                                      Foreground="{StaticResource SuccessBrush}"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtFile2" 
+                                      Text="Lista dos membros do conselho editorial" 
+                                      FontSize="13"
+                                      Foreground="{StaticResource TextLightBrush}"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" 
+                                x:Name="btnSelect2"
+                                Content=" Selecionar "
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Click="SelectFile2_Click"/>
+                    </Grid>
+                </Border>
+
+                <!-- Documento 3 - Editorial -->
+                <Border Background="{StaticResource WarningLightBrush}" 
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,0,0,20"
+                        BorderBrush="{StaticResource WarningBrush}"
+                        BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" 
+                                Background="{StaticResource WarningBrush}"
+                                CornerRadius="20" 
+                                Width="40" 
+                                Height="40" 
+                                Margin="0,0,15,0">
+                            <TextBlock Text="3" 
+                                      Foreground="White" 
+                                      FontSize="16" 
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" 
+                                   VerticalAlignment="Center">
+                            <TextBlock Text="✍️ Editorial" 
+                                      FontSize="16" 
+                                      FontWeight="SemiBold"
+                                      Foreground="{StaticResource WarningBrush}"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtFile3" 
+                                      Text="Texto editorial da edição da revista" 
+                                      FontSize="13"
+                                      Foreground="{StaticResource TextLightBrush}"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" 
+                                x:Name="btnSelect3"
+                                Content=" Selecionar "
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Click="SelectFile3_Click"/>
+                    </Grid>
+                </Border>
+
+                <!-- Status Area -->
+                <Border x:Name="statusBorder"
+                        Background="{StaticResource ErrorLightBrush}" 
+                        BorderBrush="{StaticResource ErrorBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="statusIcon"
+                                  Text="⚠️" 
+                                  FontSize="16" 
+                                  Margin="0,0,10,0"
+                                  VerticalAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock x:Name="txtStatus" 
+                                      Text="Selecione todos os 3 documentos para prosseguir"
+                                      FontSize="14"
+                                      FontWeight="SemiBold"
+                                      Foreground="{StaticResource ErrorBrush}"/>
+                            <TextBlock x:Name="txtStatusDetail"
+                                      Text="Faltam: Capa, Conselho Editorial e Editorial"
+                                      FontSize="12"
+                                      Foreground="{StaticResource TextLightBrush}"
+                                      Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" 
+                Margin="0,30,0,0">
+            <Button x:Name="btnProceed"
+                    Content="  🚀 Prosseguir  "
+                    Style="{StaticResource ModernButtonStyle}"
+                    FontSize="16"
+                    Padding="30,15"
+                    HorizontalAlignment="Center"
+                    IsEnabled="False"
+                    Click="Proceed_Click"/>
+        </Border>
+    </Grid>
 </Window>

@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\ferna\Desenvolvimento\compiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\
+C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\
 compiladorRiqual
 none
 false
-TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\ferna\Desenvolvimento\compiladorRiqual\compiladorRiqual\App.xaml
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\App.xaml
 11407045341
 
 41288897522
-1981839832580
+198-537775612
 MainWindow.xaml;
 
 False

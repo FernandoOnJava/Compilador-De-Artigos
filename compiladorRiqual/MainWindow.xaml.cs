@@ -26,45 +26,45 @@ namespace DocumentUploader
 
         private void SelectFile1_Click(object sender, RoutedEventArgs e)
         {
-            var filePath = SelectDocxFile();
+            var filePath = SelectDocxFile("Selecionar Capa da Revista");
             if (!string.IsNullOrEmpty(filePath))
             {
                 _originalFile1Path = filePath;
-                txtFile1.Text = Path.GetFileName(filePath);
-                txtFile1.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2C3E50"));
+                txtFile1.Text = $"✅ {Path.GetFileName(filePath)}";
+                txtFile1.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 UpdateStatus();
             }
         }
 
         private void SelectFile2_Click(object sender, RoutedEventArgs e)
         {
-            var filePath = SelectDocxFile();
+            var filePath = SelectDocxFile("Selecionar Conselho Editorial");
             if (!string.IsNullOrEmpty(filePath))
             {
                 _originalFile2Path = filePath;
-                txtFile2.Text = Path.GetFileName(filePath);
-                txtFile2.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2C3E50"));
+                txtFile2.Text = $"✅ {Path.GetFileName(filePath)}";
+                txtFile2.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 UpdateStatus();
             }
         }
 
         private void SelectFile3_Click(object sender, RoutedEventArgs e)
         {
-            var filePath = SelectDocxFile();
+            var filePath = SelectDocxFile("Selecionar Editorial");
             if (!string.IsNullOrEmpty(filePath))
             {
                 _originalFile3Path = filePath;
-                txtFile3.Text = Path.GetFileName(filePath);
-                txtFile3.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2C3E50"));
+                txtFile3.Text = $"✅ {Path.GetFileName(filePath)}";
+                txtFile3.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 UpdateStatus();
             }
         }
 
-        private string SelectDocxFile()
+        private string SelectDocxFile(string title)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Title = "Selecionar Documento DOCX",
+                Title = title,
                 Filter = "Documentos Word (*.docx)|*.docx",
                 FilterIndex = 1,
                 RestoreDirectory = true,
@@ -101,7 +101,7 @@ namespace DocumentUploader
             if (filesSelected == 3)
             {
                 // Todos os documentos selecionados
-                txtStatus.Text = "✅ Todos os documentos obrigatórios foram selecionados!";
+                txtStatus.Text = "✅ Todos os documentos foram selecionados!";
                 txtStatusDetail.Text = "Pronto para criar sua revista digital";
                 statusBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8F5E8"));
                 statusBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
@@ -112,7 +112,7 @@ namespace DocumentUploader
             else
             {
                 // Documentos em falta
-                txtStatus.Text = $"Selecione todos os 3 documentos obrigatórios para prosseguir ({filesSelected}/3)";
+                txtStatus.Text = $"Selecione todos os 3 documentos para prosseguir ({filesSelected}/3)";
                 txtStatusDetail.Text = $"Faltam: {string.Join(", ", missingFiles)}";
                 statusBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFE6E6"));
                 statusBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E74C3C"));
@@ -134,7 +134,12 @@ namespace DocumentUploader
 
                 // Mostrar mensagem de sucesso
                 MessageBox.Show(
-                    $"Ficheiros processados com sucesso!\n\nPasta temporária criada em:\n{TempFolderPath}\n\nOs ficheiros estão prontos para utilização.",
+                    $"✅ Documentos processados com sucesso!\n\n" +
+                    $"📁 Pasta: {TempFolderPath}\n\n" +
+                    $"📄 Ficheiros:\n" +
+                    $"• Capa: {Path.GetFileName(File1Path)}\n" +
+                    $"• Conselho Editorial: {Path.GetFileName(File2Path)}\n" +
+                    $"• Editorial: {Path.GetFileName(File3Path)}",
                     "Sucesso",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information
@@ -149,7 +154,7 @@ namespace DocumentUploader
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Erro ao processar os ficheiros:\n{ex.Message}",
+                    $"❌ Erro ao processar os ficheiros:\n{ex.Message}",
                     "Erro",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
@@ -161,7 +166,7 @@ namespace DocumentUploader
         {
             // Criar pasta temporária única
             string tempBasePath = Path.GetTempPath();
-            string folderName = $"DocumentUploader_{DateTime.Now:yyyyMMdd_HHmmss}_{Guid.NewGuid().ToString("N")[..8]}";
+            string folderName = $"RevistaDigital_{DateTime.Now:yyyyMMdd_HHmmss}";
             TempFolderPath = Path.Combine(tempBasePath, folderName);
 
             Directory.CreateDirectory(TempFolderPath);
@@ -172,26 +177,26 @@ namespace DocumentUploader
             if (!string.IsNullOrEmpty(_originalFile1Path))
             {
                 string fileName = Path.GetFileName(_originalFile1Path);
-                File1Path = Path.Combine(TempFolderPath, $"Documento1_{fileName}");
+                File1Path = Path.Combine(TempFolderPath, $"01_Capa_{fileName}");
                 File.Copy(_originalFile1Path, File1Path, true);
             }
 
             if (!string.IsNullOrEmpty(_originalFile2Path))
             {
                 string fileName = Path.GetFileName(_originalFile2Path);
-                File2Path = Path.Combine(TempFolderPath, $"Documento2_{fileName}");
+                File2Path = Path.Combine(TempFolderPath, $"02_ConselhoEditorial_{fileName}");
                 File.Copy(_originalFile2Path, File2Path, true);
             }
 
             if (!string.IsNullOrEmpty(_originalFile3Path))
             {
                 string fileName = Path.GetFileName(_originalFile3Path);
-                File3Path = Path.Combine(TempFolderPath, $"Documento3_{fileName}");
+                File3Path = Path.Combine(TempFolderPath, $"03_Editorial_{fileName}");
                 File.Copy(_originalFile3Path, File3Path, true);
             }
         }
 
-        // Método para limpeza da pasta temporária (opcional)
+        // Método para limpeza da pasta temporária
         public void CleanupTempFolder()
         {
             try
@@ -203,12 +208,10 @@ namespace DocumentUploader
             }
             catch (Exception ex)
             {
-                // Log do erro se necessário
                 System.Diagnostics.Debug.WriteLine($"Erro ao limpar pasta temporária: {ex.Message}");
             }
         }
 
-        // Chamado quando a janela é fechada
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
