@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-23T09:29:58.984Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "compiladorRiqual\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml.cs",
+              "RelativeToolTip": "compiladorRiqual\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAMoAAAAAAAAAAAAAwNgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T09:29:54.617Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
