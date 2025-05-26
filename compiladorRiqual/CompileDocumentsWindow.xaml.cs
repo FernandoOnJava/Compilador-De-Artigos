@@ -19,9 +19,10 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using A = DocumentFormat.OpenXml.Drawing;
-using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
-using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
+
+// Aliases para resolver conflitos de nomes
+using WpfStyle = System.Windows.Style;
+using OpenXmlStyle = DocumentFormat.OpenXml.Wordprocessing.Style;
 
 namespace DocumentUploader
 {
@@ -33,6 +34,9 @@ namespace DocumentUploader
         private string capaFilePath;
         private string conselhoFilePath;
         private string editorialFilePath;
+
+        // Path da ficha técnica (CONFIGURAR ESTE PATH!)
+        private string fichaTecnicaPath = @"C:\path\to\ficha_tecnica.docx"; // ALTERE ESTE PATH
 
         private Dictionary<string, List<Author>> articleAuthors;
         private DispatcherTimer progressTimer;
@@ -57,6 +61,13 @@ namespace DocumentUploader
                 _progressValue = value;
                 OnPropertyChanged();
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         // Construtor que recebe os ficheiros do formulário anterior
@@ -289,9 +300,6 @@ namespace DocumentUploader
                 stylesPart.Styles = styles;
                 AddCustomStyles(styles);
 
-                // Add header/footer definitions
-                AddHeaderFooterDefinitions(mainPart);
-
                 // Extract all authors and article info
                 articleAuthors.Clear();
                 var allAuthors = new List<Author>();
@@ -314,44 +322,41 @@ namespace DocumentUploader
                     .OrderBy(a => a.Nome)
                     .ToList();
 
-                // Create sections with different headers/footers
-                SectionProperties firstSectionProps = new SectionProperties();
-
                 // ORDEM SOLICITADA:
                 // 1. Capa
-                AddCapa(body, capaFilePath);
-                body.AppendChild(new Paragraph(new Run(new Break { Type = BreakValues.Page })));
+                AddDocument(body, capaFilePath, "Capa");
+                AddPageBreak(body);
 
-                // 2. Página em Branco
+                // 2. Folha em Branco
                 AddBlankPage(body);
-                body.AppendChild(new Paragraph(new Run(new Break { Type = BreakValues.Page })));
+                AddPageBreak(body);
 
-                // 3. Conselho Editorial
-                AddConselhoEditorial(body, conselhoFilePath);
+                // 3. Ficha Técnica
+                AddDocument(body, fichaTecnicaPath, "Ficha Técnica");
+                AddPageBreak(body);
 
-                // 4. Lista de Autores
+                // 4. Conselho Editorial
+                AddDocument(body, conselhoFilePath, "Conselho Editorial");
+                AddPageBreak(body);
+
+                // 5. Lista de Autores
                 AddAuthorList(body, allAuthors);
+                AddPageBreak(body);
 
-                // 5. Índice
-                AddTableOfContents(body);
+                // 6. Índice
+                AddTableOfContents(body, articleInfoList);
+                AddPageBreak(body);
 
-                // End first section (roman numerals)
-                SetupFirstSectionProperties(firstSectionProps, mainPart);
-                body.AppendChild(new Paragraph(new ParagraphProperties(firstSectionProps)));
+                // 7. Editorial
+                AddArticleWithHeading(body, editorialFilePath, "Editorial", new List<Author>());
+                AddPageBreak(body);
 
-                // 6. Editorial (start of arabic numerals)
-                SectionProperties secondSectionProps = new SectionProperties();
-                AddEditorial(body, editorialFilePath);
-
-                // 7. Artigos
+                // 8. Artigos
                 foreach (var articleInfo in articleInfoList)
                 {
-                    AddArticle(body, articleInfo, mainPart);
+                    AddArticleWithHeading(body, articleInfo.FilePath, articleInfo.Title, articleInfo.Authors);
+                    AddPageBreak(body);
                 }
-
-                // Setup second section properties
-                SetupSecondSectionProperties(secondSectionProps, mainPart);
-                body.AppendChild(new Paragraph(new ParagraphProperties(secondSectionProps)));
 
                 // Update fields (for TOC)
                 AddSettingsToDocument(mainPart);
@@ -360,253 +365,390 @@ namespace DocumentUploader
             }
         }
 
-        private void AddCapa(Body body, string capaPath)
+        private void AddCustomStyles(Styles styles)
         {
-            if (!string.IsNullOrEmpty(capaPath) && File.Exists(capaPath))
+            // Heading1 style for articles - usando OpenXmlStyle explicitamente
+            OpenXmlStyle heading1Style = new OpenXmlStyle()
+            {
+                Type = StyleValues.Paragraph,
+                StyleId = "Heading1",
+                StyleName = new StyleName() { Val = "Heading 1" }
+            };
+
+            StyleParagraphProperties heading1PPr = new StyleParagraphProperties();
+            heading1PPr.Append(new OutlineLevel() { Val = 0 });
+            heading1PPr.Append(new SpacingBetweenLines() { Before = "240", After = "120" });
+            heading1Style.Append(heading1PPr);
+
+            StyleRunProperties heading1RPr = new StyleRunProperties();
+            heading1RPr.Append(new Bold());
+            heading1RPr.Append(new FontSize() { Val = "32" });
+            heading1Style.Append(heading1RPr);
+
+            styles.Append(heading1Style);
+
+            // Author style - usando OpenXmlStyle explicitamente
+            OpenXmlStyle authorStyle = new OpenXmlStyle()
+            {
+                Type = StyleValues.Paragraph,
+                StyleId = "ArticleAuthor",
+                StyleName = new StyleName() { Val = "Article Author" }
+            };
+
+            StyleParagraphProperties authorPPr = new StyleParagraphProperties();
+            authorPPr.Append(new SpacingBetweenLines() { Before = "0", After = "240" });
+            authorStyle.Append(authorPPr);
+
+            StyleRunProperties authorRPr = new StyleRunProperties();
+            authorRPr.Append(new Italic());
+            authorRPr.Append(new FontSize() { Val = "24" });
+            authorStyle.Append(authorRPr);
+
+            styles.Append(authorStyle);
+        }
+
+        private ArticleInfo ExtractArticleInfo(string filePath)
+        {
+            var articleInfo = new ArticleInfo
+            {
+                FilePath = filePath,
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Authors = new List<Author>()
+            };
+
+            try
+            {
+                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
+                {
+                    if (wordDoc.MainDocumentPart != null && wordDoc.MainDocumentPart.Document.Body != null)
+                    {
+                        var paragraphs = wordDoc.MainDocumentPart.Document.Body.Elements<Paragraph>().ToList();
+
+                        // First paragraph is usually the title
+                        if (paragraphs.Count > 0)
+                        {
+                            articleInfo.Title = paragraphs[0].InnerText.Trim();
+                        }
+
+                        // Find authors (before Abstract/Resumo)
+                        int abstractIndex = -1;
+                        for (int i = 0; i < paragraphs.Count; i++)
+                        {
+                            string text = paragraphs[i].InnerText.Trim();
+                            if (text.StartsWith("Resumo", StringComparison.OrdinalIgnoreCase) ||
+                                text.StartsWith("Abstract", StringComparison.OrdinalIgnoreCase))
+                            {
+                                abstractIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (abstractIndex < 0) abstractIndex = paragraphs.Count;
+
+                        // Extract authors from paragraphs 1 to abstractIndex-1
+                        for (int i = 1; i < abstractIndex && i < paragraphs.Count; i++)
+                        {
+                            string text = paragraphs[i].InnerText.Trim();
+                            if (!string.IsNullOrEmpty(text))
+                            {
+                                Author author = ParseAuthor(text);
+                                if (author != null)
+                                {
+                                    articleInfo.Authors.Add(author);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao ler artigo {Path.GetFileName(filePath)}: {ex.Message}",
+                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return articleInfo;
+        }
+
+        private Author ParseAuthor(string text)
+        {
+            var emailMatch = Regex.Match(text, @"\b[\w\.-]+@[\w\.-]+\.\w+\b");
+            string email = emailMatch.Success ? emailMatch.Value : string.Empty;
+
+            var idMatch = Regex.Match(text, @"\b\d{5,}\b");
+            string id = idMatch.Success ? idMatch.Value : string.Empty;
+
+            string remaining = text;
+            if (emailMatch.Success) remaining = remaining.Replace(email, "");
+            if (idMatch.Success) remaining = remaining.Replace(id, "");
+
+            remaining = Regex.Replace(remaining, @"Email|E-mail|ID|Id|^\d+\s*[-–]\s*", "", RegexOptions.IgnoreCase).Trim();
+            remaining = remaining.Trim(' ', '-', ',', '.', '–');
+
+            var parts = remaining.Split(new[] { '-', '–', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(p => p.Trim()).ToArray();
+
+            string name = parts.Length > 0 ? parts[0] : string.Empty;
+            string school = parts.Length > 1 ? string.Join(" - ", parts.Skip(1)) : string.Empty;
+
+            if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email)) return null;
+
+            return new Author
+            {
+                Nome = name,
+                Email = email,
+                Escola = school,
+                Id = id
+            };
+        }
+
+        private void AddDocument(Body body, string filePath, string title)
+        {
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
                 try
                 {
-                    using (WordprocessingDocument capaDoc = WordprocessingDocument.Open(capaPath, false))
+                    using (WordprocessingDocument sourceDoc = WordprocessingDocument.Open(filePath, false))
                     {
-                        if (capaDoc.MainDocumentPart != null && capaDoc.MainDocumentPart.Document.Body != null)
+                        if (sourceDoc.MainDocumentPart != null && sourceDoc.MainDocumentPart.Document.Body != null)
                         {
-                            // Copiar todo o conteúdo da capa
-                            foreach (var element in capaDoc.MainDocumentPart.Document.Body.Elements())
+                            foreach (var element in sourceDoc.MainDocumentPart.Document.Body.Elements())
                             {
-                                var clonedElement = element.CloneNode(true);
-
-                                // Se houver imagens, precisamos copiá-las também
-                                if (element.Descendants<Drawing>().Any())
-                                {
-                                    CopyImages(capaDoc.MainDocumentPart, body.GetFirstChild<Document>().MainDocumentPart, clonedElement);
-                                }
-
-                                body.AppendChild(clonedElement);
+                                body.AppendChild(element.CloneNode(true));
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Se houver erro, criar uma capa simples
-                    AddDefaultCoverPage(body);
+                    // Se houver erro, adicionar uma mensagem
+                    Paragraph errorPara = new Paragraph(new Run(new Text($"Erro ao carregar {title}: {ex.Message}")));
+                    body.AppendChild(errorPara);
                 }
             }
             else
             {
-                // Capa padrão se o ficheiro não existir
-                AddDefaultCoverPage(body);
+                // Se o ficheiro não existir
+                Paragraph missingPara = new Paragraph(new Run(new Text($"{title} - Ficheiro não encontrado")));
+                body.AppendChild(missingPara);
             }
         }
 
-        private void CopyImages(MainDocumentPart sourcePart, MainDocumentPart targetPart, OpenXmlElement element)
+        private void AddBlankPage(Body body)
         {
-            // Implementação simplificada para copiar imagens
-            // Em produção, seria necessário um código mais robusto
-            foreach (var drawing in element.Descendants<Drawing>())
+            // Adicionar página em branco
+            Paragraph blankPara = new Paragraph();
+            body.AppendChild(blankPara);
+        }
+
+        private void AddAuthorList(Body body, List<Author> authors)
+        {
+            // Title
+            Paragraph titleParagraph = new Paragraph();
+            titleParagraph.ParagraphProperties = new ParagraphProperties(
+                new ParagraphStyleId() { Val = "Heading1" }
+            );
+            Run titleRun = new Run(new Text("Lista de Autores"));
+            titleParagraph.Append(titleRun);
+            body.AppendChild(titleParagraph);
+
+            // Authors
+            foreach (var author in authors)
             {
-                var blip = drawing.Descendants<A.Blip>().FirstOrDefault();
-                if (blip != null && blip.Embed != null)
+                string authorText = author.Nome;
+                if (!string.IsNullOrEmpty(author.Email))
+                    authorText += $" - {author.Email}";
+                if (!string.IsNullOrEmpty(author.Escola))
+                    authorText += $" - {author.Escola}";
+
+                Paragraph authorParagraph = new Paragraph(new Run(new Text(authorText)));
+                body.AppendChild(authorParagraph);
+            }
+        }
+
+        private void AddTableOfContents(Body body, List<ArticleInfo> articles)
+        {
+            // Title
+            Paragraph titleParagraph = new Paragraph();
+            titleParagraph.ParagraphProperties = new ParagraphProperties(
+                new ParagraphStyleId() { Val = "Heading1" }
+            );
+            Run titleRun = new Run(new Text("Índice"));
+            titleParagraph.Append(titleRun);
+            body.AppendChild(titleParagraph);
+
+            // Editorial entry
+            Paragraph editorialPara = new Paragraph();
+            Run editorialRun = new Run(new Text("Editorial"));
+            editorialRun.RunProperties = new RunProperties(new Bold());
+            editorialPara.Append(editorialRun);
+
+            // Add page number (placeholder)
+            editorialPara.Append(new Run(new Text(" ................... ")));
+            editorialPara.Append(new Run(new Text("XX")));
+            body.AppendChild(editorialPara);
+
+            // Article entries
+            foreach (var article in articles)
+            {
+                // Article title with page number
+                Paragraph articlePara = new Paragraph();
+                Run articleRun = new Run(new Text(article.Title));
+                articleRun.RunProperties = new RunProperties(new Bold());
+                articlePara.Append(articleRun);
+
+                // Add page number (placeholder)
+                articlePara.Append(new Run(new Text(" ................... ")));
+                articlePara.Append(new Run(new Text("XX")));
+                body.AppendChild(articlePara);
+
+                // Authors below title
+                if (article.Authors.Count > 0)
                 {
-                    try
+                    Paragraph authorsPara = new Paragraph();
+                    authorsPara.ParagraphProperties = new ParagraphProperties(
+                        new Indentation() { Left = "720" } // Indent authors
+                    );
+                    string authorNames = string.Join(", ", article.Authors.Select(a => a.Nome));
+                    Run authorsRun = new Run(new Text(authorNames));
+                    authorsRun.RunProperties = new RunProperties(new Italic());
+                    authorsPara.Append(authorsRun);
+                    body.AppendChild(authorsPara);
+                }
+            }
+        }
+
+        private void AddArticleWithHeading(Body body, string filePath, string title, List<Author> authors)
+        {
+            // Article title with Heading1 style
+            Paragraph titleParagraph = new Paragraph();
+            titleParagraph.ParagraphProperties = new ParagraphProperties(
+                new ParagraphStyleId() { Val = "Heading1" }
+            );
+            Run titleRun = new Run(new Text(title));
+            titleParagraph.Append(titleRun);
+            body.AppendChild(titleParagraph);
+
+            // Authors in italic (nome 1, nome 2, nome 3)
+            if (authors.Count > 0)
+            {
+                Paragraph authorParagraph = new Paragraph();
+                Run authorRun = new Run();
+                authorRun.RunProperties = new RunProperties(new Italic());
+                string authorNames = string.Join(", ", authors.Select(a => a.Nome));
+                authorRun.Append(new Text(authorNames));
+                authorParagraph.Append(authorRun);
+                authorParagraph.ParagraphProperties = new ParagraphProperties(
+                    new SpacingBetweenLines() { After = "240" }
+                );
+                body.AppendChild(authorParagraph);
+            }
+
+            // Article content
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            {
+                try
+                {
+                    using (WordprocessingDocument articleDoc = WordprocessingDocument.Open(filePath, false))
                     {
-                        var imagePart = sourcePart.GetPartById(blip.Embed.Value);
-                        if (imagePart is ImagePart sourceImagePart)
+                        if (articleDoc.MainDocumentPart != null && articleDoc.MainDocumentPart.Document.Body != null)
                         {
-                            ImagePart targetImagePart = targetPart.AddImagePart(sourceImagePart.ContentType);
-                            using (var stream = sourceImagePart.GetStream())
+                            var elements = articleDoc.MainDocumentPart.Document.Body.Elements().ToList();
+
+                            // Skip the original title and author paragraphs when copying content
+                            int startIndex = Math.Min(authors.Count + 1, elements.Count);
+
+                            for (int i = startIndex; i < elements.Count; i++)
                             {
-                                targetImagePart.FeedData(stream);
+                                body.AppendChild(elements[i].CloneNode(true));
                             }
-                            blip.Embed = targetPart.GetIdOfPart(targetImagePart);
                         }
                     }
-                    catch { }
+                }
+                catch (Exception ex)
+                {
+                    Paragraph errorPara = new Paragraph(new Run(new Text($"Erro ao carregar conteúdo: {ex.Message}")));
+                    body.AppendChild(errorPara);
                 }
             }
         }
 
-        private void AddDefaultCoverPage(Body body)
+        private void AddPageBreak(Body body)
         {
-            // Capa padrão
-            Paragraph titlePara = new Paragraph();
-            titlePara.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center },
-                new SpacingBetweenLines() { Before = "5000" }
-            );
-            Run titleRun = new Run();
-            titleRun.RunProperties = new RunProperties(
-                new Bold(),
-                new FontSize() { Val = "48" }
-            );
-            titleRun.Append(new Text("TMQ"));
-            titlePara.Append(titleRun);
-            body.AppendChild(titlePara);
-
-            // Subtitle
-            Paragraph subtitlePara = new Paragraph();
-            subtitlePara.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center },
-                new SpacingBetweenLines() { After = "2000" }
-            );
-            Run subtitleRun = new Run();
-            subtitleRun.RunProperties = new RunProperties(
-                new FontSize() { Val = "28" }
-            );
-            subtitleRun.Append(new Text("TECHNIQUES, METHODOLOGIES AND QUALITY"));
-            subtitlePara.Append(subtitleRun);
-            body.AppendChild(subtitlePara);
-
-            // Date
-            Paragraph datePara = new Paragraph();
-            datePara.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center }
-            );
-            Run dateRun = new Run(new Text(DateTime.Now.ToString("MMMM yyyy", new CultureInfo("pt-PT"))));
-            dateRun.RunProperties = new RunProperties(new FontSize() { Val = "24" });
-            datePara.Append(dateRun);
-            body.AppendChild(datePara);
+            body.AppendChild(new Paragraph(new Run(new Break { Type = BreakValues.Page })));
         }
 
-        private void AddHeaderFooterDefinitions(MainDocumentPart mainPart)
+        private void AddSettingsToDocument(MainDocumentPart mainPart)
         {
-            // Create header parts
-            HeaderPart headerPart1 = mainPart.AddNewPart<HeaderPart>();
-            HeaderPart headerPartOdd = mainPart.AddNewPart<HeaderPart>();
-            HeaderPart headerPartEven = mainPart.AddNewPart<HeaderPart>();
+            DocumentSettingsPart settingsPart = mainPart.AddNewPart<DocumentSettingsPart>();
+            Settings settings = new Settings();
+            settings.Append(new UpdateFieldsOnOpen() { Val = true });
+            settingsPart.Settings = settings;
+        }
+    }
 
-            // Header for first section (all pages até ao editorial)
-            Header header1 = new Header();
-            Paragraph headerPara1 = new Paragraph();
-            headerPara1.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Right }
-            );
-            headerPara1.Append(new Run(new Text("TMQ – TECHNIQUES, METHODOLOGIES AND QUALITY")));
-            header1.Append(headerPara1);
-            headerPart1.Header = header1;
+    // Support classes
+    public class Author
+    {
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Escola { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
+    }
 
-            // Headers for articles section
-            // Odd pages - article title
-            Header headerOdd = new Header();
-            Paragraph headerParaOdd = new Paragraph();
-            headerParaOdd.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Right }
-            );
-            headerParaOdd.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.Begin }));
-            headerParaOdd.Append(new Run(new FieldCode(" STYLEREF \"Heading1\" \\* MERGEFORMAT ")));
-            headerParaOdd.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.End }));
-            headerOdd.Append(headerParaOdd);
-            headerPartOdd.Header = headerOdd;
+    public class ArticleInfo
+    {
+        public string FilePath { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public List<Author> Authors { get; set; } = new List<Author>();
+    }
 
-            // Even pages - TMQ
-            Header headerEven = new Header();
-            Paragraph headerParaEven = new Paragraph();
-            headerParaEven.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Right }
-            );
-            headerParaEven.Append(new Run(new Text("TMQ – TECHNIQUES, METHODOLOGIES AND QUALITY")));
-            headerEven.Append(headerParaEven);
-            headerPartEven.Header = headerEven;
-
-            // Create footer parts
-            FooterPart footerPart1 = mainPart.AddNewPart<FooterPart>();
-            FooterPart footerPartOdd = mainPart.AddNewPart<FooterPart>();
-            FooterPart footerPartEven = mainPart.AddNewPart<FooterPart>();
-
-            // Footer for first section (roman numerals)
-            Footer footer1 = new Footer();
-            Paragraph footerPara1 = new Paragraph();
-            footerPara1.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center }
-            );
-            footerPara1.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.Begin }));
-            footerPara1.Append(new Run(new FieldCode(" PAGE \\* ROMAN ")));
-            footerPara1.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.End }));
-            footer1.Append(footerPara1);
-            footerPart1.Footer = footer1;
-
-            // Footers for articles section
-            // Odd pages - page number and authors
-            Footer footerOdd = new Footer();
-
-            // Page number
-            Paragraph pageNumPara = new Paragraph();
-            pageNumPara.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center }
-            );
-            pageNumPara.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.Begin }));
-            pageNumPara.Append(new Run(new FieldCode(" PAGE ")));
-            pageNumPara.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.End }));
-            footerOdd.Append(pageNumPara);
-
-            // Authors - this would need to be dynamic per article
-            Paragraph authorsPara = new Paragraph();
-            authorsPara.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center },
-                new SpacingBetweenLines() { Before = "120" }
-            );
-            Run authorsRun = new Run();
-            authorsRun.RunProperties = new RunProperties(
-                new FontSize() { Val = "18" },
-                new Italic()
-            );
-            authorsRun.Append(new Text(""));  // Will be filled dynamically
-            authorsPara.Append(authorsRun);
-            footerOdd.Append(authorsPara);
-
-            footerPartOdd.Footer = footerOdd;
-
-            // Even pages - just page number
-            Footer footerEven = new Footer();
-            Paragraph footerParaEven = new Paragraph();
-            footerParaEven.ParagraphProperties = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center }
-            );
-            footerParaEven.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.Begin }));
-            footerParaEven.Append(new Run(new FieldCode(" PAGE ")));
-            footerParaEven.Append(new Run(new FieldChar() { FieldCharType = FieldCharValues.End }));
-            footerEven.Append(footerParaEven);
-            footerPartEven.Footer = footerEven;
+    // Converters
+    public class FileNameConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string filePath)
+            {
+                return Path.GetFileName(filePath);
+            }
+            return value?.ToString() ?? string.Empty;
         }
 
-        private void SetupFirstSectionProperties(SectionProperties props, MainDocumentPart mainPart)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            props.Append(new PageSize() { Width = 11906, Height = 16838 });
-            props.Append(new PageMargin() { Top = 1440, Right = 1440, Bottom = 1440, Left = 1440 });
+            throw new NotImplementedException();
+        }
+    }
 
-            var headerParts = mainPart.HeaderParts.ToList();
-            if (headerParts.Count > 0)
-            {
-                props.Append(new HeaderReference() { Type = HeaderFooterValues.Default, Id = mainPart.GetIdOfPart(headerParts[0]) });
-            }
-
-            var footerParts = mainPart.FooterParts.ToList();
-            if (footerParts.Count > 0)
-            {
-                props.Append(new FooterReference() { Type = FooterValues.Default, Id = mainPart.GetIdOfPart(footerParts[0]) });
-            }
-
-            props.Append(new PageNumberType() { Format = NumberFormatValues.LowerRoman });
+    public class FileIconConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            // Retorna null - sem ícone
+            return null;
         }
 
-        private void SetupSecondSectionProperties(SectionProperties props, MainDocumentPart mainPart)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            props.Append(new PageSize() { Width = 11906, Height = 16838 });
-            props.Append(new PageMargin() { Top = 1440, Right = 1440, Bottom = 1440, Left = 1440 });
+            throw new NotImplementedException();
+        }
+    }
 
-            var headerParts = mainPart.HeaderParts.ToList();
-            if (headerParts.Count > 1)
+    public class BoolToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
             {
-                props.Append(new HeaderReference() { Type = HeaderFooterValues.Odd, Id = mainPart.GetIdOfPart(headerParts[1]) });
-                if (headerParts.Count > 2)
-                {
-                    props.Append(new HeaderReference() { Type = HeaderFooterValues.Even, Id = mainPart.GetIdOfPart(headerParts[2]) });
-                }
+                return boolValue ? Visibility.Visible : Visibility.Collapsed;
             }
+            return Visibility.Collapsed;
+        }
 
-            var footerParts = mainPart.FooterParts.ToList();
-            if (footerParts.Count > 1)
-            {
-                props.Append(new FooterReference() { Type = FooterValues.Odd, Id = mainPart.GetIdOfPart(footerParts[1]) });
-                if (footerParts.Count > 2)
-                {
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

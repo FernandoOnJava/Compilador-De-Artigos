@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
@@ -8,13 +10,19 @@ namespace DocumentUploader
     public partial class MainWindow : Window
     {
         // Propriedades públicas para acesso aos ficheiros
-        public string File1Path { get; private set; } // Capa
-        public string File2Path { get; private set; } // Conselho Editorial
-        public string File3Path { get; private set; } // Editorial
+        public string File1Path { get; private set; }
+        public string File2Path { get; private set; }
+        public string File3Path { get; private set; }
 
         public MainWindow()
         {
             InitializeComponent();
+
+            // Inicializar propriedades
+            File1Path = string.Empty;
+            File2Path = string.Empty;
+            File3Path = string.Empty;
+
             UpdateStatus();
         }
 
@@ -69,7 +77,7 @@ namespace DocumentUploader
             {
                 return openFileDialog.FileName;
             }
-            return null;
+            return string.Empty;
         }
 
         private void UpdateStatus()
@@ -120,6 +128,25 @@ namespace DocumentUploader
         {
             try
             {
+                // Verificar se todos os ficheiros existem
+                if (string.IsNullOrEmpty(File1Path) || !File.Exists(File1Path))
+                {
+                    MessageBox.Show("❌ O ficheiro da capa não foi encontrado!", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(File2Path) || !File.Exists(File2Path))
+                {
+                    MessageBox.Show("❌ O ficheiro do conselho editorial não foi encontrado!", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(File3Path) || !File.Exists(File3Path))
+                {
+                    MessageBox.Show("❌ O ficheiro do editorial não foi encontrado!", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 // Abrir o formulário de compilação passando os ficheiros selecionados
                 var compileWindow = new CompileDocumentsWindow(File1Path, File2Path, File3Path);
                 compileWindow.Show();

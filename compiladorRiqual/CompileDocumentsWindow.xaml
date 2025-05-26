@@ -235,7 +235,7 @@
 
                     <StackPanel>
                         <TextBlock Text="📄 Capa" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="0,0,0,10"/>
-                        <TextBlock x:Name="capaStatus" Text="Carregando..." 
+                        <TextBlock x:Name="capaStatus" Text=" A carregar..." 
                                    FontSize="13" Foreground="#10B981" FontWeight="Medium"/>
                     </StackPanel>
                 </Border>
@@ -248,7 +248,7 @@
 
                     <StackPanel>
                         <TextBlock Text="👥 Conselho Editorial" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="0,0,0,10"/>
-                        <TextBlock x:Name="conselhoStatus" Text="Carregando..." 
+                        <TextBlock x:Name="conselhoStatus" Text=" A carregar..." 
                                    FontSize="13" Foreground="#10B981" FontWeight="Medium"/>
                     </StackPanel>
                 </Border>
@@ -261,7 +261,7 @@
 
                     <StackPanel>
                         <TextBlock Text="✍️ Editorial" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="0,0,0,10"/>
-                        <TextBlock x:Name="editorialStatus" Text="Carregando..." 
+                        <TextBlock x:Name="editorialStatus" Text=" A carregar..." 
                                    FontSize="13" Foreground="#10B981" FontWeight="Medium"/>
                     </StackPanel>
                 </Border>
