@@ -35,8 +35,21 @@ namespace DocumentUploader
         private string conselhoFilePath;
         private string editorialFilePath;
 
-        // Path da ficha técnica (CONFIGURAR ESTE PATH!)
-        private string fichaTecnicaPath = @"C:\path\to\ficha_tecnica.docx"; // ALTERE ESTE PATH
+        // Path da ficha técnica (automaticamente detectado)
+        private string GetFichaTecnicaPath()
+        {
+            // Procura na pasta Resources do projeto
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string resourcesPath = Path.Combine(baseDir, "Resources", "ficha_tecnica.docx");
+
+            // Se não existir na pasta Resources, procura na pasta raiz da aplicação
+            if (!File.Exists(resourcesPath))
+            {
+                resourcesPath = Path.Combine(baseDir, "ficha_tecnica.docx");
+            }
+
+            return resourcesPath;
+        }
 
         private Dictionary<string, List<Author>> articleAuthors;
         private DispatcherTimer progressTimer;
@@ -232,6 +245,17 @@ namespace DocumentUploader
                 return;
             }
 
+            // Inicializar terminal de debug se ativado
+            if (SHOW_DEBUG_TERMINAL)
+            {
+                debugTerminal = new DebugTerminalWindow();
+                debugTerminal.Owner = this;
+                debugTerminal.Show();
+                debugTerminal.WriteLine("🚀 Iniciando compilação da revista...");
+                debugTerminal.WriteLine($"📁 Total de artigos: {SelectedFiles.Count}");
+                debugTerminal.WriteSeparator();
+            }
+
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Filter = "Ficheiro Word (*.docx)|*.docx",
@@ -245,6 +269,9 @@ namespace DocumentUploader
                 ProgressValue = 0;
                 progressTimer.Start();
 
+                debugTerminal?.WriteLine($"💾 Documento será salvo em: {saveFileDialog.FileName}");
+                debugTerminal?.UpdateStatus("Compilando...");
+
                 try
                 {
                     await Task.Run(() => CreateRevistaDocument(saveFileDialog.FileName));
@@ -254,6 +281,8 @@ namespace DocumentUploader
                     await Task.Delay(500);
 
                     UpdateStatus($"Revista compilada com sucesso!");
+                    debugTerminal?.WriteLineSuccess("Revista compilada com sucesso!");
+                    debugTerminal?.UpdateStatus("Concluído");
 
                     MessageBox.Show($"Revista guardada com sucesso!\nLocalização: {saveFileDialog.FileName}",
                         "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -262,6 +291,9 @@ namespace DocumentUploader
                 {
                     progressTimer.Stop();
                     UpdateStatus("Erro: " + ex.Message);
+                    debugTerminal?.WriteLineError($"Erro na compilação: {ex.Message}");
+                    debugTerminal?.UpdateStatus("Erro");
+
                     MessageBox.Show("Erro ao compilar revista: " + ex.Message,
                         "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -270,6 +302,11 @@ namespace DocumentUploader
                     IsCompiling = false;
                     ProgressValue = 0;
                 }
+            }
+            else
+            {
+                // Utilizador cancelou - fechar terminal se aberto
+                debugTerminal?.Hide();
             }
         }
 
@@ -288,11 +325,15 @@ namespace DocumentUploader
 
         private void CreateRevistaDocument(string outputPath)
         {
+            debugTerminal?.WriteLine("📄 Criando documento Word...");
+
             using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(outputPath, WordprocessingDocumentType.Document))
             {
                 MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
                 mainPart.Document = new Document(new Body());
                 Body body = mainPart.Document.Body;
+
+                debugTerminal?.WriteLine("🎨 Definindo estilos do documento...");
 
                 // Define styles
                 StyleDefinitionsPart stylesPart = mainPart.AddNewPart<StyleDefinitionsPart>();
@@ -300,68 +341,127 @@ namespace DocumentUploader
                 stylesPart.Styles = styles;
                 AddCustomStyles(styles);
 
+                debugTerminal?.WriteLine("🔍 Iniciando extração de informações dos artigos...");
+                debugTerminal?.WriteSeparator();
+
                 // Extract all authors and article info
                 articleAuthors.Clear();
                 var allAuthors = new List<Author>();
                 var articleInfoList = new List<ArticleInfo>();
 
+                int articleCount = 1;
                 foreach (var article in SelectedFiles)
                 {
+                    debugTerminal?.WriteLine($"📖 Processando artigo {articleCount}/{SelectedFiles.Count}: {Path.GetFileName(article)}");
+
                     var articleInfo = ExtractArticleInfo(article);
                     if (articleInfo != null)
                     {
                         articleInfoList.Add(articleInfo);
                         articleAuthors[article] = articleInfo.Authors;
                         allAuthors.AddRange(articleInfo.Authors);
+
+                        debugTerminal?.WriteLineInfo($"   Título: {articleInfo.Title}");
+                        debugTerminal?.WriteLineInfo($"   Autores encontrados: {articleInfo.Authors.Count}");
+
+                        foreach (var author in articleInfo.Authors)
+                        {
+                            debugTerminal?.WriteLine($"     👤 {author.Nome}" +
+                                (!string.IsNullOrEmpty(author.Email) ? $" ({author.Email})" : "") +
+                                (!string.IsNullOrEmpty(author.Escola) ? $" - {author.Escola}" : ""));
+                        }
                     }
+                    else
+                    {
+                        debugTerminal?.WriteLineWarning($"   Falhou ao extrair informações do artigo");
+                    }
+
+                    debugTerminal?.WriteLine("");
+                    articleCount++;
                 }
 
+                debugTerminal?.WriteSeparator();
+                debugTerminal?.WriteLine("👥 Processando lista de autores...");
+
                 // Remove duplicates from author list
+                int totalAuthors = allAuthors.Count;
                 allAuthors = allAuthors.GroupBy(a => a.Email ?? a.Nome)
                     .Select(g => g.First())
                     .OrderBy(a => a.Nome)
                     .ToList();
 
+                debugTerminal?.WriteLineSuccess($"Lista de autores criada: {allAuthors.Count} autores únicos (de {totalAuthors} totais)");
+
+                foreach (var author in allAuthors)
+                {
+                    debugTerminal?.WriteLine($"  📝 {author.Nome}" +
+                        (!string.IsNullOrEmpty(author.Email) ? $" - {author.Email}" : "") +
+                        (!string.IsNullOrEmpty(author.Escola) ? $" - {author.Escola}" : ""));
+                }
+
+                debugTerminal?.WriteSeparator();
+                debugTerminal?.WriteLine("📑 Montando documento na ordem específica...");
+
                 // ORDEM SOLICITADA:
                 // 1. Capa
+                debugTerminal?.WriteLine("1️⃣ Adicionando Capa...");
                 AddDocument(body, capaFilePath, "Capa");
                 AddPageBreak(body);
 
                 // 2. Folha em Branco
+                debugTerminal?.WriteLine("2️⃣ Adicionando Página em Branco...");
                 AddBlankPage(body);
                 AddPageBreak(body);
 
                 // 3. Ficha Técnica
-                AddDocument(body, fichaTecnicaPath, "Ficha Técnica");
+                debugTerminal?.WriteLine("3️⃣ Adicionando Ficha Técnica...");
+                AddDocument(body, GetFichaTecnicaPath(), "Ficha Técnica");
                 AddPageBreak(body);
 
                 // 4. Conselho Editorial
+                debugTerminal?.WriteLine("4️⃣ Adicionando Conselho Editorial...");
                 AddDocument(body, conselhoFilePath, "Conselho Editorial");
                 AddPageBreak(body);
 
                 // 5. Lista de Autores
+                debugTerminal?.WriteLine("5️⃣ Adicionando Lista de Autores...");
                 AddAuthorList(body, allAuthors);
                 AddPageBreak(body);
 
                 // 6. Índice
+                debugTerminal?.WriteLine("6️⃣ Adicionando Índice...");
                 AddTableOfContents(body, articleInfoList);
                 AddPageBreak(body);
 
                 // 7. Editorial
+                debugTerminal?.WriteLine("7️⃣ Adicionando Editorial...");
                 AddArticleWithHeading(body, editorialFilePath, "Editorial", new List<Author>());
                 AddPageBreak(body);
 
                 // 8. Artigos
+                debugTerminal?.WriteLine("8️⃣ Adicionando Artigos...");
+                int artCount = 1;
                 foreach (var articleInfo in articleInfoList)
                 {
+                    debugTerminal?.WriteLine($"   📄 Artigo {artCount}/{articleInfoList.Count}: {articleInfo.Title}");
                     AddArticleWithHeading(body, articleInfo.FilePath, articleInfo.Title, articleInfo.Authors);
                     AddPageBreak(body);
+                    artCount++;
                 }
 
+                debugTerminal?.WriteLine("⚙️ Configurando atualização automática de campos...");
                 // Update fields (for TOC)
                 AddSettingsToDocument(mainPart);
 
+                debugTerminal?.WriteLine("💾 Salvando documento...");
                 mainPart.Document.Save();
+
+                debugTerminal?.WriteSeparator();
+                debugTerminal?.WriteLineSuccess("✨ Documento compilado com sucesso!");
+                debugTerminal?.WriteLine($"📊 Estatísticas finais:");
+                debugTerminal?.WriteLine($"   • Total de artigos: {articleInfoList.Count}");
+                debugTerminal?.WriteLine($"   • Total de autores únicos: {allAuthors.Count}");
+                debugTerminal?.WriteLine($"   • Localização: {outputPath}");
             }
         }
 
@@ -423,11 +523,17 @@ namespace DocumentUploader
                     if (wordDoc.MainDocumentPart != null && wordDoc.MainDocumentPart.Document.Body != null)
                     {
                         var paragraphs = wordDoc.MainDocumentPart.Document.Body.Elements<Paragraph>().ToList();
+                        debugTerminal?.WriteLineInfo($"     📄 Total de parágrafos encontrados: {paragraphs.Count}");
 
                         // First paragraph is usually the title
                         if (paragraphs.Count > 0)
                         {
-                            articleInfo.Title = paragraphs[0].InnerText.Trim();
+                            string extractedTitle = paragraphs[0].InnerText.Trim();
+                            if (!string.IsNullOrEmpty(extractedTitle))
+                            {
+                                articleInfo.Title = extractedTitle;
+                                debugTerminal?.WriteLineInfo($"     📝 Título extraído: {extractedTitle}");
+                            }
                         }
 
                         // Find authors (before Abstract/Resumo)
@@ -439,22 +545,34 @@ namespace DocumentUploader
                                 text.StartsWith("Abstract", StringComparison.OrdinalIgnoreCase))
                             {
                                 abstractIndex = i;
+                                debugTerminal?.WriteLineInfo($"     🔍 Abstract/Resumo encontrado no parágrafo {i}");
                                 break;
                             }
                         }
 
-                        if (abstractIndex < 0) abstractIndex = paragraphs.Count;
+                        if (abstractIndex < 0)
+                        {
+                            abstractIndex = paragraphs.Count;
+                            debugTerminal?.WriteLineWarning($"     ⚠️ Abstract/Resumo não encontrado, processando até o final");
+                        }
 
                         // Extract authors from paragraphs 1 to abstractIndex-1
+                        debugTerminal?.WriteLineInfo($"     👥 Procurando autores nos parágrafos 1 a {abstractIndex - 1}");
                         for (int i = 1; i < abstractIndex && i < paragraphs.Count; i++)
                         {
                             string text = paragraphs[i].InnerText.Trim();
                             if (!string.IsNullOrEmpty(text))
                             {
+                                debugTerminal?.WriteLine($"       Parágrafo {i}: \"{text.Substring(0, Math.Min(text.Length, 50))}...\"");
                                 Author author = ParseAuthor(text);
                                 if (author != null)
                                 {
                                     articleInfo.Authors.Add(author);
+                                    debugTerminal?.WriteLineSuccess($"       ✅ Autor extraído: {author.Nome}");
+                                }
+                                else
+                                {
+                                    debugTerminal?.WriteLine($"       ❌ Não foi possível extrair autor deste parágrafo");
                                 }
                             }
                         }
@@ -463,6 +581,7 @@ namespace DocumentUploader
             }
             catch (Exception ex)
             {
+                debugTerminal?.WriteLineError($"     ❌ Erro ao processar artigo: {ex.Message}");
                 MessageBox.Show($"Erro ao ler artigo {Path.GetFileName(filePath)}: {ex.Message}",
                     "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
@@ -685,6 +804,9 @@ namespace DocumentUploader
             settings.Append(new UpdateFieldsOnOpen() { Val = true });
             settingsPart.Settings = settings;
         }
+
+        private DebugTerminalWindow? debugTerminal;
+        private const bool SHOW_DEBUG_TERMINAL = true; // ou false, conforme desejado
     }
 
     // Support classes

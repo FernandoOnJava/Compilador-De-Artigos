@@ -5,5 +5,8 @@
     <Compile Update="CompileDocumentsWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="DebugTerminalWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

@@ -28,3 +28,5 @@ C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\bin\Debug\net8.
 C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\bin\Debug\net8.0-windows\System.IO.Packaging.dll
 C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\CompileDocumentsWindow.baml
 C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\compilad.36390059.Up2Date
+C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\DebugTerminalWindow.baml
+C:\Users\ferna\Desenvolvimento\CompiladorRiqual\compiladorRiqual\obj\Debug\net8.0-windows\DebugTerminalWindow.g.cs

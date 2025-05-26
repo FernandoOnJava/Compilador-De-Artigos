@@ -1,7 +1,7 @@
 ﻿<Window x:Class="DocumentUploader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Compilador de Artigos" 
+        Title="Compilador de Artigos Riqual" 
         Height="700" 
         Width="900"
         WindowStartupLocation="CenterScreen"
@@ -130,7 +130,7 @@
                           Foreground="{StaticResource PrimaryBrush}"
                           HorizontalAlignment="Center"
                           Margin="0,0,0,10"/>
-                <TextBlock Text="Carregue os seguintes documentos para proseguir com a criação da revista!" 
+                <TextBlock Text="Carregue os seguintes documentos para proseguir com a compilação!" 
                           FontSize="15" 
                           Foreground="{StaticResource TextLightBrush}"
                           HorizontalAlignment="Center"

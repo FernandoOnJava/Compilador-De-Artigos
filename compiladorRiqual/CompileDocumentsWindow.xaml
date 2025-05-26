@@ -6,7 +6,7 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namespace:DocumentUploader"
         mc:Ignorable="d"
-        Title="TMQ Document Compiler" Height="700" Width="900"
+        Title="Compilador de Artigos Riqual" Height="700" Width="900"
         WindowStartupLocation="CenterScreen"
         Background="#F5F7FA">
 
@@ -124,7 +124,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="TMQ Document Compiler" FontSize="28" FontWeight="Bold" Foreground="#1E293B"/>
+                    <TextBlock Text="Compilador de Artigos Riqual" FontSize="28" FontWeight="Bold" Foreground="#1E293B"/>
                     <TextBlock Text="Compile múltiplos artigos num documento único" FontSize="16" Foreground="#64748B" Margin="0,5,0,0"/>
                 </StackPanel>
             </Grid>

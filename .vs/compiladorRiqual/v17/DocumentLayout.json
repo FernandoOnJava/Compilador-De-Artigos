@@ -1,12 +1,68 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\compiledocumentswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\compiledocumentswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\debugterminalwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\debugterminalwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-26T13:20:27.159Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DebugTerminalWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\CompiladorRiqual\\compiladorRiqual\\DebugTerminalWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\DebugTerminalWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\CompiladorRiqual\\compiladorRiqual\\DebugTerminalWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\DebugTerminalWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-26T13:20:29.133Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CompileDocumentsWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\CompileDocumentsWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\CompileDocumentsWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\CompileDocumentsWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\CompileDocumentsWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-26T13:09:44.343Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
