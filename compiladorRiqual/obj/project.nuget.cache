@@ -1,14 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "YkKrGpO8Y1I=",
+  "dgSpecHash": "XcLn2LOXEpc=",
   "success": true,
   "projectFilePath": "C:\\Users\\ferna\\Desenvolvimento\\CompiladorRiqual\\compiladorRiqual\\compiladorRiqual.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ferna\\.nuget\\packages\\documentformat.openxml\\3.3.0\\documentformat.openxml.3.3.0.nupkg.sha512",
     "C:\\Users\\ferna\\.nuget\\packages\\documentformat.openxml.framework\\3.3.0\\documentformat.openxml.framework.3.3.0.nupkg.sha512",
     "C:\\Users\\ferna\\.nuget\\packages\\gong-wpf-dragdrop\\2.3.2\\gong-wpf-dragdrop.2.3.2.nupkg.sha512",
-    "C:\\Users\\ferna\\.nuget\\packages\\lightimage.dragdrop\\0.5.5\\lightimage.dragdrop.0.5.5.nupkg.sha512",
-    "C:\\Users\\ferna\\.nuget\\packages\\lightimage.dragdrop.wpf\\0.5.5\\lightimage.dragdrop.wpf.0.5.5.nupkg.sha512",
     "C:\\Users\\ferna\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512"
   ],
   "logs": []

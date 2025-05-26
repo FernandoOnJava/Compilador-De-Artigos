@@ -1,14 +1,13 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Media;
-using compiladorRiqual;
 using Microsoft.Win32;
 
 namespace DocumentUploader
 {
     public partial class MainWindow : Window
     {
-        // Propriedades públicas para acesso aos fiche  iros
+        // Propriedades públicas para acesso aos ficheiros
         public string File1Path { get; private set; } // Capa
         public string File2Path { get; private set; } // Conselho Editorial
         public string File3Path { get; private set; } // Editorial
@@ -122,7 +121,7 @@ namespace DocumentUploader
             try
             {
                 // Abrir o formulário de compilação passando os ficheiros selecionados
-                var compileWindow = new articleForm(File1Path, File2Path, File3Path);
+                var compileWindow = new CompileDocumentsWindow(File1Path, File2Path, File3Path);
                 compileWindow.Show();
 
                 // Fechar esta janela

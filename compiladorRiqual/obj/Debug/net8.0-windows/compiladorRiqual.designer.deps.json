@@ -36,26 +36,6 @@
           }
         }
       },
-      "LightImage.DragDrop/0.5.5": {
-        "runtime": {
-          "lib/netstandard2.0/LightImage.DragDrop.dll": {
-            "assemblyVersion": "0.5.5.0",
-            "fileVersion": "0.5.5.0"
-          }
-        }
-      },
-      "LightImage.DragDrop.Wpf/0.5.5": {
-        "dependencies": {
-          "LightImage.DragDrop": "0.5.5",
-          "gong-wpf-dragdrop": "2.3.2"
-        },
-        "runtime": {
-          "lib/netcoreapp3.1/LightImage.DragDrop.Wpf.dll": {
-            "assemblyVersion": "0.5.5.0",
-            "fileVersion": "0.5.5.0"
-          }
-        }
-      },
       "System.IO.Packaging/8.0.1": {
         "runtime": {
           "lib/net8.0/System.IO.Packaging.dll": {
@@ -87,20 +67,6 @@
       "sha512": "sha512-DNDROdFmlwn544P2qVF+f+aHRZmEp8ub8IrjvWgT3VAK7LfdN3BcEi9mSEzmt8hUqIdt1+B1VHkJUdK7kO/zKw==",
       "path": "gong-wpf-dragdrop/2.3.2",
       "hashPath": "gong-wpf-dragdrop.2.3.2.nupkg.sha512"
-    },
-    "LightImage.DragDrop/0.5.5": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-kGV70Bi906SSZj28cxmcsjpZce6GiBpy9GLKl6sj97Gsj0pjSRgRQj/EyAhUDWs1Qb/AZsd25v6wwlPnNsb93g==",
-      "path": "lightimage.dragdrop/0.5.5",
-      "hashPath": "lightimage.dragdrop.0.5.5.nupkg.sha512"
-    },
-    "LightImage.DragDrop.Wpf/0.5.5": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-PI+uIEt8dL5t5oYoMqF2IRXkI0tc6cEGVYBOn4hbgl4vhNSRY4G4G6pHZN5tJ4HYfLvZZGzgnWecRScxm/cU2g==",
-      "path": "lightimage.dragdrop.wpf/0.5.5",
-      "hashPath": "lightimage.dragdrop.wpf.0.5.5.nupkg.sha512"
     },
     "System.IO.Packaging/8.0.1": {
       "type": "package",

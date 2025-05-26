@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dd="urn:gong-wpf-dragdrop"
-        xmlns:local="clr-namespace:WpfDocCompiler"
+        xmlns:local="clr-namespace:DocumentUploader"
         mc:Ignorable="d"
         Title="TMQ Document Compiler" Height="700" Width="900"
         WindowStartupLocation="CenterScreen"
@@ -127,9 +127,6 @@
                     <TextBlock Text="TMQ Document Compiler" FontSize="28" FontWeight="Bold" Foreground="#1E293B"/>
                     <TextBlock Text="Compile múltiplos artigos num documento único" FontSize="16" Foreground="#64748B" Margin="0,5,0,0"/>
                 </StackPanel>
-
-                <Image Grid.Column="1" Source="pack://application:,,,/Images/tmq_logo.png" Height="50" Width="50" 
-                       VerticalAlignment="Center" Margin="20,0,0,0"/>
             </Grid>
         </Border>
 
@@ -196,8 +193,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Image Grid.Column="0" Width="24" Height="24" Margin="0,0,12,0"
-                                               Source="{Binding Converter={StaticResource FileIconConverter}}"/>
+                                        <TextBlock Grid.Column="0" Text="📄" FontSize="20" Margin="0,0,12,0" VerticalAlignment="Center"/>
 
                                         <TextBlock Grid.Column="1" 
                                                    Text="{Binding Converter={StaticResource FileNameConverter}}"
@@ -279,11 +275,12 @@
                             <TextBlock.Text>
                                 1. Capa
 2. Página em Branco
-3. Conselho Editorial
-4. Lista de Autores
-5. Índice
-6. Editorial
-7. Artigos (ordem definida)
+3. Ficha Técnica
+4. Conselho Editorial
+5. Lista de Autores
+6. Índice
+7. Editorial
+8. Artigos (ordem definida)
                             </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
@@ -298,88 +295,31 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
-        </Grid> Panel Grid.Column="1">
-        <!-- Editorial Section -->
-        <Border Background="White" CornerRadius="8" Margin="0,0,0,15" Padding="20">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.1"/>
-            </Border.Effect>
-
-            <StackPanel>
-                <TextBlock Text="Editorial" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="0,0,0,10"/>
-                <TextBlock x:Name="editorialStatus" Text="Nenhum ficheiro selecionado" 
-                                   FontSize="13" Foreground="#94A3B8" Margin="0,0,0,10"/>
-                <Button Click="AddEditorial_Click" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Selecionar Editorial"/>
-                </Button>
-            </StackPanel>
-        </Border>
-
-        <!-- Conselho Editorial Section -->
-        <Border Background="White" CornerRadius="8" Padding="20">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.1"/>
-            </Border.Effect>
-
-            <StackPanel>
-                <TextBlock Text="Conselho Editorial" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="0,0,0,10"/>
-                <TextBlock x:Name="conselhoStatus" Text="Nenhum ficheiro selecionado" 
-                                   FontSize="13" Foreground="#94A3B8" Margin="0,0,0,10"/>
-                <Button Click="AddConselho_Click" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Selecionar Conselho"/>
-                </Button>
-            </StackPanel>
-        </Border>
-
-        <!-- Compile Button -->
-        <Button x:Name="btnCompile" Click="Compile_Click" Style="{StaticResource SuccessButton}" 
-                        Margin="0,30,0,0" HorizontalAlignment="Stretch" IsEnabled="False">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="⚡" FontSize="18" Margin="0,0,8,0"/>
-                <TextBlock Text="Compilar Documento"/>
-            </StackPanel>
-        </Button>
-        </StackPanel>
-    </Grid>
-
-    <!-- Progress Bar -->
-    <Grid Grid.Row="2" Visibility="{Binding IsCompiling, Converter={StaticResource BoolToVisibilityConverter}}"
-              Background="White" Height="60">
-        <Grid.Effect>
-            <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.1" Direction="270"/>
-        </Grid.Effect>
-
-        <Grid Margin="30,15">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Text="A compilar documento..." FontSize="14" Foreground="#64748B" Margin="0,0,0,8"/>
-
-            <ProgressBar Grid.Row="1" Height="8" Value="{Binding ProgressValue}" Maximum="100">
-                <ProgressBar.Template>
-                    <ControlTemplate TargetType="ProgressBar">
-                        <Grid>
-                            <Border Background="#E2E8F0" CornerRadius="4"/>
-                            <Border Background="#3B82F6" CornerRadius="4" HorizontalAlignment="Left"
-                                        Width="{Binding RelativeSource={RelativeSource TemplatedParent}, 
-                                               Path=Value, Converter={StaticResource ProgressToWidthConverter}}">
-                                <Border.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Value, 
-                                                       Converter={StaticResource ValueToScaleConverter}}" />
-                                </Border.RenderTransform>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </ProgressBar.Template>
-            </ProgressBar>
         </Grid>
-    </Grid>
 
-    <!-- Status Bar -->
-    <Border Grid.Row="3" Background="#1E293B" Padding="30,15">
-        <TextBlock x:Name="statusTextBlock" Text="Pronto" Foreground="White" FontSize="13"/>
-    </Border>
+        <!-- Progress Bar -->
+        <Grid Grid.Row="2" Visibility="{Binding IsCompiling, Converter={StaticResource BoolToVisibilityConverter}}"
+              Background="White" Height="60">
+            <Grid.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.1" Direction="270"/>
+            </Grid.Effect>
+
+            <Grid Margin="30,15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="A compilar documento..." FontSize="14" Foreground="#64748B" Margin="0,0,0,8"/>
+
+                <ProgressBar Grid.Row="1" Height="8" Value="{Binding ProgressValue}" Maximum="100"
+                             Background="#E2E8F0" Foreground="#3B82F6"/>
+            </Grid>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="#1E293B" Padding="30,15">
+            <TextBlock x:Name="statusTextBlock" Text="Pronto" Foreground="White" FontSize="13"/>
+        </Border>
     </Grid>
 </Window>
