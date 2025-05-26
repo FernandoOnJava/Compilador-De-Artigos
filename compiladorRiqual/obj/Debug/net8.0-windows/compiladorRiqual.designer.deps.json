@@ -5,7 +5,109 @@
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v8.0": {}
+    ".NETCoreApp,Version=v8.0": {
+      "DocumentFormat.OpenXml/3.3.0": {
+        "dependencies": {
+          "DocumentFormat.OpenXml.Framework": "3.3.0"
+        },
+        "runtime": {
+          "lib/net8.0/DocumentFormat.OpenXml.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.3.0.0"
+          }
+        }
+      },
+      "DocumentFormat.OpenXml.Framework/3.3.0": {
+        "dependencies": {
+          "System.IO.Packaging": "8.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/DocumentFormat.OpenXml.Framework.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.3.0.0"
+          }
+        }
+      },
+      "gong-wpf-dragdrop/2.3.2": {
+        "runtime": {
+          "lib/netcoreapp3.1/GongSolutions.WPF.DragDrop.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.3.2.3"
+          }
+        }
+      },
+      "LightImage.DragDrop/0.5.5": {
+        "runtime": {
+          "lib/netstandard2.0/LightImage.DragDrop.dll": {
+            "assemblyVersion": "0.5.5.0",
+            "fileVersion": "0.5.5.0"
+          }
+        }
+      },
+      "LightImage.DragDrop.Wpf/0.5.5": {
+        "dependencies": {
+          "LightImage.DragDrop": "0.5.5",
+          "gong-wpf-dragdrop": "2.3.2"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/LightImage.DragDrop.Wpf.dll": {
+            "assemblyVersion": "0.5.5.0",
+            "fileVersion": "0.5.5.0"
+          }
+        }
+      },
+      "System.IO.Packaging/8.0.1": {
+        "runtime": {
+          "lib/net8.0/System.IO.Packaging.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.1024.46610"
+          }
+        }
+      }
+    }
   },
-  "libraries": {}
+  "libraries": {
+    "DocumentFormat.OpenXml/3.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JogRPJNiE6kKvbuCqVRX691pPWeGMqdQgjrUwRYkdpfkMmtElfqAgcRR73geYj7OtBeEpstldZXXzJw27LUI9w==",
+      "path": "documentformat.openxml/3.3.0",
+      "hashPath": "documentformat.openxml.3.3.0.nupkg.sha512"
+    },
+    "DocumentFormat.OpenXml.Framework/3.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-R5CLzEoeyr7XDB7g3NTxRobcU19agaxVAhGZm+fZUShJGiU4bw8oUgnA2BNFepigJckfFMayOBMAbV3kDXNInA==",
+      "path": "documentformat.openxml.framework/3.3.0",
+      "hashPath": "documentformat.openxml.framework.3.3.0.nupkg.sha512"
+    },
+    "gong-wpf-dragdrop/2.3.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DNDROdFmlwn544P2qVF+f+aHRZmEp8ub8IrjvWgT3VAK7LfdN3BcEi9mSEzmt8hUqIdt1+B1VHkJUdK7kO/zKw==",
+      "path": "gong-wpf-dragdrop/2.3.2",
+      "hashPath": "gong-wpf-dragdrop.2.3.2.nupkg.sha512"
+    },
+    "LightImage.DragDrop/0.5.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kGV70Bi906SSZj28cxmcsjpZce6GiBpy9GLKl6sj97Gsj0pjSRgRQj/EyAhUDWs1Qb/AZsd25v6wwlPnNsb93g==",
+      "path": "lightimage.dragdrop/0.5.5",
+      "hashPath": "lightimage.dragdrop.0.5.5.nupkg.sha512"
+    },
+    "LightImage.DragDrop.Wpf/0.5.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PI+uIEt8dL5t5oYoMqF2IRXkI0tc6cEGVYBOn4hbgl4vhNSRY4G4G6pHZN5tJ4HYfLvZZGzgnWecRScxm/cU2g==",
+      "path": "lightimage.dragdrop.wpf/0.5.5",
+      "hashPath": "lightimage.dragdrop.wpf.0.5.5.nupkg.sha512"
+    },
+    "System.IO.Packaging/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-KYkIOAvPexQOLDxPO2g0BVoWInnQhPpkFzRqvNrNrMhVT6kqhVr0zEb6KCHlptLFukxnZrjuMVAnxK7pOGUYrw==",
+      "path": "system.io.packaging/8.0.1",
+      "hashPath": "system.io.packaging.8.0.1.nupkg.sha512"
+    }
+  }
 }

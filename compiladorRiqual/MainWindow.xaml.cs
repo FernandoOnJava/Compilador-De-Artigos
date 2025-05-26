@@ -1,22 +1,17 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using compiladorRiqual;
 using Microsoft.Win32;
 
 namespace DocumentUploader
 {
     public partial class MainWindow : Window
     {
-        // Propriedades públicas para acesso aos ficheiros e pasta temporária
-        public string TempFolderPath { get; private set; }
-        public string File1Path { get; private set; }
-        public string File2Path { get; private set; }
-        public string File3Path { get; private set; }
-
-        // Caminhos originais dos ficheiros selecionados
-        private string _originalFile1Path;
-        private string _originalFile2Path;
-        private string _originalFile3Path;
+        // Propriedades públicas para acesso aos fiche  iros
+        public string File1Path { get; private set; } // Capa
+        public string File2Path { get; private set; } // Conselho Editorial
+        public string File3Path { get; private set; } // Editorial
 
         public MainWindow()
         {
@@ -29,7 +24,7 @@ namespace DocumentUploader
             var filePath = SelectDocxFile("Selecionar Capa da Revista");
             if (!string.IsNullOrEmpty(filePath))
             {
-                _originalFile1Path = filePath;
+                File1Path = filePath;
                 txtFile1.Text = $"✅ {Path.GetFileName(filePath)}";
                 txtFile1.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 UpdateStatus();
@@ -41,7 +36,7 @@ namespace DocumentUploader
             var filePath = SelectDocxFile("Selecionar Conselho Editorial");
             if (!string.IsNullOrEmpty(filePath))
             {
-                _originalFile2Path = filePath;
+                File2Path = filePath;
                 txtFile2.Text = $"✅ {Path.GetFileName(filePath)}";
                 txtFile2.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 UpdateStatus();
@@ -53,7 +48,7 @@ namespace DocumentUploader
             var filePath = SelectDocxFile("Selecionar Editorial");
             if (!string.IsNullOrEmpty(filePath))
             {
-                _originalFile3Path = filePath;
+                File3Path = filePath;
                 txtFile3.Text = $"✅ {Path.GetFileName(filePath)}";
                 txtFile3.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 UpdateStatus();
@@ -83,17 +78,17 @@ namespace DocumentUploader
             int filesSelected = 0;
             var missingFiles = new List<string>();
 
-            if (!string.IsNullOrEmpty(_originalFile1Path))
+            if (!string.IsNullOrEmpty(File1Path))
                 filesSelected++;
             else
                 missingFiles.Add("Capa");
 
-            if (!string.IsNullOrEmpty(_originalFile2Path))
+            if (!string.IsNullOrEmpty(File2Path))
                 filesSelected++;
             else
                 missingFiles.Add("Conselho Editorial");
 
-            if (!string.IsNullOrEmpty(_originalFile3Path))
+            if (!string.IsNullOrEmpty(File3Path))
                 filesSelected++;
             else
                 missingFiles.Add("Editorial");
@@ -102,7 +97,7 @@ namespace DocumentUploader
             {
                 // Todos os documentos selecionados
                 txtStatus.Text = "✅ Todos os documentos foram selecionados!";
-                txtStatusDetail.Text = "Pronto para criar sua revista digital";
+                txtStatusDetail.Text = "Pronto para adicionar artigos e compilar a revista";
                 statusBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8F5E8"));
                 statusBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
                 statusIcon.Text = "✅";
@@ -126,97 +121,22 @@ namespace DocumentUploader
         {
             try
             {
-                // Criar pasta temporária
-                CreateTempFolder();
+                // Abrir o formulário de compilação passando os ficheiros selecionados
+                var compileWindow = new articleForm(File1Path, File2Path, File3Path);
+                compileWindow.Show();
 
-                // Copiar ficheiros para a pasta temporária
-                CopyFilesToTempFolder();
-
-                // Mostrar mensagem de sucesso
-                MessageBox.Show(
-                    $"✅ Documentos processados com sucesso!\n\n" +
-                    $"📁 Pasta: {TempFolderPath}\n\n" +
-                    $"📄 Ficheiros:\n" +
-                    $"• Capa: {Path.GetFileName(File1Path)}\n" +
-                    $"• Conselho Editorial: {Path.GetFileName(File2Path)}\n" +
-                    $"• Editorial: {Path.GetFileName(File3Path)}",
-                    "Sucesso",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information
-                );
-
-                // Aqui podes abrir outro formulário ou fazer outras operações
-                // Exemplo: 
-                // var nextWindow = new NextWindow(this.TempFolderPath);
-                // nextWindow.Show();
-                // this.Close();
+                // Fechar esta janela
+                this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"❌ Erro ao processar os ficheiros:\n{ex.Message}",
+                    $"❌ Erro ao abrir o formulário de compilação:\n{ex.Message}",
                     "Erro",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
             }
-        }
-
-        private void CreateTempFolder()
-        {
-            // Criar pasta temporária única
-            string tempBasePath = Path.GetTempPath();
-            string folderName = $"RevistaDigital_{DateTime.Now:yyyyMMdd_HHmmss}";
-            TempFolderPath = Path.Combine(tempBasePath, folderName);
-
-            Directory.CreateDirectory(TempFolderPath);
-        }
-
-        private void CopyFilesToTempFolder()
-        {
-            if (!string.IsNullOrEmpty(_originalFile1Path))
-            {
-                string fileName = Path.GetFileName(_originalFile1Path);
-                File1Path = Path.Combine(TempFolderPath, $"01_Capa_{fileName}");
-                File.Copy(_originalFile1Path, File1Path, true);
-            }
-
-            if (!string.IsNullOrEmpty(_originalFile2Path))
-            {
-                string fileName = Path.GetFileName(_originalFile2Path);
-                File2Path = Path.Combine(TempFolderPath, $"02_ConselhoEditorial_{fileName}");
-                File.Copy(_originalFile2Path, File2Path, true);
-            }
-
-            if (!string.IsNullOrEmpty(_originalFile3Path))
-            {
-                string fileName = Path.GetFileName(_originalFile3Path);
-                File3Path = Path.Combine(TempFolderPath, $"03_Editorial_{fileName}");
-                File.Copy(_originalFile3Path, File3Path, true);
-            }
-        }
-
-        // Método para limpeza da pasta temporária
-        public void CleanupTempFolder()
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(TempFolderPath) && Directory.Exists(TempFolderPath))
-                {
-                    Directory.Delete(TempFolderPath, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro ao limpar pasta temporária: {ex.Message}");
-            }
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            // Opcional: limpar pasta temporária ao fechar
-            // CleanupTempFolder();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="DocumentUploader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Revista Digital - Upload de Documentos" 
+        Title="Compilador de Artigos" 
         Height="700" 
         Width="900"
         WindowStartupLocation="CenterScreen"
