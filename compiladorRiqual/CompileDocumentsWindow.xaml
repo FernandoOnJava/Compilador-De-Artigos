@@ -144,6 +144,10 @@
                 </Border.Effect>
 
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="101*"/>
+                        <ColumnDefinition Width="8*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -151,7 +155,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- List Header -->
-                    <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="8,8,0,0" Padding="20,15">
+                    <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="8,8,0,0" Padding="20,15" Grid.ColumnSpan="2" Margin="0,0,0,302" Grid.RowSpan="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -177,7 +181,7 @@
                              BorderThickness="0"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              Background="Transparent"
-                             Padding="10">
+                             Padding="10" Grid.ColumnSpan="2" SelectionChanged="filesListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Background="#F8FAFC" CornerRadius="6" Margin="5" 
@@ -211,7 +215,7 @@
                     </ListBox>
 
                     <!-- List Actions -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="20,10" HorizontalAlignment="Right">
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="402,10,0,10" HorizontalAlignment="Left" Grid.ColumnSpan="2">
                         <Button Click="MoveUp_Click" Style="{StaticResource IconButton}" Margin="0,0,5,0" ToolTip="Mover para cima">
                             <TextBlock Text="↑" FontSize="18" Foreground="#64748B"/>
                         </Button>

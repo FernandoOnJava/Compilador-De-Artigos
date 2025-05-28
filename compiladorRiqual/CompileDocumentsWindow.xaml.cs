@@ -174,21 +174,126 @@ namespace DocumentUploader
 
         private void AddFiles_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            try
             {
-                Filter = "Ficheiros Word (*.docx)|*.docx",
-                Multiselect = true,
-                Title = "Selecionar Artigos"
-            };
+                debugTerminal?.WriteLine("🔘 Botão 'Adicionar Artigos' clicado");
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                foreach (string fileName in openFileDialog.FileNames)
+                OpenFileDialog openFileDialog = new OpenFileDialog
                 {
-                    SelectedFiles.Add(fileName);
+                    Filter = "Ficheiros Word (*.docx)|*.docx|Todos os ficheiros (*.*)|*.*",
+                    Multiselect = true,
+                    Title = "Selecionar Artigos para Adicionar",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    RestoreDirectory = true,
+                    CheckFileExists = true,
+                    CheckPathExists = true
+                };
+
+                debugTerminal?.WriteLine("📁 Abrindo diálogo de seleção de ficheiros...");
+
+                bool? result = openFileDialog.ShowDialog(this);
+
+                if (result == true)
+                {
+                    debugTerminal?.WriteLine($"✅ Utilizador selecionou {openFileDialog.FileNames.Length} ficheiro(s)");
+
+                    int addedCount = 0;
+                    int duplicateCount = 0;
+                    int invalidCount = 0;
+
+                    foreach (string fileName in openFileDialog.FileNames)
+                    {
+                        debugTerminal?.WriteLine($"📄 Processando: {Path.GetFileName(fileName)}");
+
+                        // Verificar se o ficheiro existe
+                        if (!File.Exists(fileName))
+                        {
+                            debugTerminal?.WriteLineError($"   Ficheiro não encontrado: {fileName}");
+                            invalidCount++;
+                            continue;
+                        }
+
+                        // Verificar se já está na lista
+                        if (SelectedFiles.Contains(fileName))
+                        {
+                            debugTerminal?.WriteLineWarning($"   Ficheiro já adicionado: {Path.GetFileName(fileName)}");
+                            duplicateCount++;
+                            continue;
+                        }
+
+                        // Verificar extensão
+                        if (!Path.GetExtension(fileName).Equals(".docx", StringComparison.OrdinalIgnoreCase))
+                        {
+                            debugTerminal?.WriteLineWarning($"   Ficheiro não é .docx: {Path.GetFileName(fileName)}");
+                            invalidCount++;
+                            continue;
+                        }
+
+                        // Adicionar à lista
+                        SelectedFiles.Add(fileName);
+                        addedCount++;
+                        debugTerminal?.WriteLineSuccess($"   ✅ Adicionado: {Path.GetFileName(fileName)}");
+                    }
+
+                    // Relatório final
+                    debugTerminal?.WriteSeparator();
+                    debugTerminal?.WriteLine($"📊 Relatório da adição:");
+                    debugTerminal?.WriteLine($"   • Adicionados: {addedCount}");
+                    debugTerminal?.WriteLine($"   • Duplicados: {duplicateCount}");
+                    debugTerminal?.WriteLine($"   • Inválidos: {invalidCount}");
+                    debugTerminal?.WriteLine($"   • Total na lista: {SelectedFiles.Count}");
+
+                    if (addedCount > 0)
+                    {
+                        UpdateStatus($"{addedCount} artigo(s) adicionado(s) com sucesso!");
+                        CheckCompileEnabled();
+
+                        // Forçar refresh da ListBox
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            filesListBox.Items.Refresh();
+                            filesListBox.UpdateLayout();
+                        }), DispatcherPriority.Background);
+                    }
+                    else
+                    {
+                        string message = duplicateCount > 0 ?
+                            "Todos os ficheiros já estavam na lista" :
+                            "Nenhum ficheiro válido foi selecionado";
+                        UpdateStatus(message);
+                    }
                 }
-                UpdateStatus($"{openFileDialog.FileNames.Length} artigo(s) adicionado(s)");
-                CheckCompileEnabled();
+                else
+                {
+                    debugTerminal?.WriteLine("❌ Utilizador cancelou a seleção");
+                    UpdateStatus("Seleção cancelada pelo utilizador");
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMsg = $"Erro ao adicionar ficheiros: {ex.Message}";
+                debugTerminal?.WriteLineError(errorMsg);
+                debugTerminal?.WriteLineError($"Stack trace: {ex.StackTrace}");
+
+                MessageBox.Show(errorMsg, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                UpdateStatus($"Erro: {ex.Message}");
+            }
+        }
+
+        // Método auxiliar para verificar se o SelectedFiles está inicializado corretamente
+        private void VerifySelectedFilesInitialization()
+        {
+            if (SelectedFiles == null)
+            {
+                debugTerminal?.WriteLineError("❌ SelectedFiles é null! Reinicializando...");
+                SelectedFiles = new ObservableCollection<string>();
+                filesListBox.ItemsSource = SelectedFiles;
+            }
+
+            if (filesListBox.ItemsSource == null)
+            {
+                debugTerminal?.WriteLineError("❌ filesListBox.ItemsSource é null! Reconectando...");
+                filesListBox.ItemsSource = SelectedFiles;
             }
         }
 
@@ -807,6 +912,11 @@ namespace DocumentUploader
 
         private DebugTerminalWindow? debugTerminal;
         private const bool SHOW_DEBUG_TERMINAL = true; // ou false, conforme desejado
+
+        private void filesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 
     // Support classes

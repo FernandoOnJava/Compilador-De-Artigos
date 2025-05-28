@@ -84,7 +84,7 @@ namespace DocumentUploader {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/compiladorRiqual;component/debugterminalwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/compiladorRiqual;V1.0.0.0;component/debugterminalwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\DebugTerminalWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
