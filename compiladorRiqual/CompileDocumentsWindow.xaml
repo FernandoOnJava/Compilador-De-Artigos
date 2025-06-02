@@ -144,10 +144,6 @@
                 </Border.Effect>
 
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="101*"/>
-                        <ColumnDefinition Width="8*"/>
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -155,16 +151,25 @@
                     </Grid.RowDefinitions>
 
                     <!-- List Header -->
-                    <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="8,8,0,0" Padding="20,15" Grid.ColumnSpan="2" Margin="0,0,0,302" Grid.RowSpan="2">
+                    <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="8,8,0,0" Padding="20,15">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Artigos" FontSize="18" FontWeight="SemiBold" Foreground="#1E293B"/>
+                            <TextBlock Grid.Column="0" 
+                                       Text="Artigos" 
+                                       FontSize="18" 
+                                       FontWeight="SemiBold" 
+                                       Foreground="#1E293B"
+                                       VerticalAlignment="Center"/>
 
-                            <Button Grid.Column="1" Click="AddFiles_Click" Style="{StaticResource ModernButton}">
+                            <!-- Botão Adicionar -->
+                            <Button Grid.Column="1"
+                                    x:Name="btnAddFiles"
+                                    Click="AddFiles_Click" 
+                                    Style="{StaticResource ModernButton}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="+" FontSize="18" Margin="0,0,5,0"/>
                                     <TextBlock Text="Adicionar"/>
@@ -174,14 +179,16 @@
                     </Border>
 
                     <!-- Files ListBox -->
-                    <ListBox Grid.Row="1" x:Name="filesListBox" 
+                    <ListBox Grid.Row="1" 
+                             x:Name="filesListBox" 
                              dd:DragDrop.IsDragSource="True"
                              dd:DragDrop.IsDropTarget="True"
                              dd:DragDrop.DropHandler="{Binding}"
                              BorderThickness="0"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              Background="Transparent"
-                             Padding="10" Grid.ColumnSpan="2" SelectionChanged="filesListBox_SelectionChanged">
+                             Padding="10" 
+                             SelectionChanged="filesListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Background="#F8FAFC" CornerRadius="6" Margin="5" 
@@ -215,7 +222,7 @@
                     </ListBox>
 
                     <!-- List Actions -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="402,10,0,10" HorizontalAlignment="Left" Grid.ColumnSpan="2">
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="20,10" HorizontalAlignment="Right">
                         <Button Click="MoveUp_Click" Style="{StaticResource IconButton}" Margin="0,0,5,0" ToolTip="Mover para cima">
                             <TextBlock Text="↑" FontSize="18" Foreground="#64748B"/>
                         </Button>
@@ -278,13 +285,14 @@
                         <TextBlock FontSize="12" Foreground="#1E40AF" TextWrapping="Wrap">
                             <TextBlock.Text>
                                 1. Capa
-2. Página em Branco
-3. Ficha Técnica
-4. Conselho Editorial
-5. Lista de Autores
-6. Índice
-7. Editorial
-8. Artigos (ordem definida)
+                                2. Página em Branco
+                                3. Ficha Técnica
+                                4. Conselho Editorial
+                                5. Lista de Autores
+                                6. Índice
+                                7. Editorial
+                                8. Artigos (ordem definida)
+                                9. Contracapa
                             </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>

@@ -172,6 +172,7 @@ namespace DocumentUploader
         }
         #endregion
 
+        // SUBSTITUA o método AddFiles_Click no CompileDocumentsWindow.xaml.cs por esta versão limpa:
         private void AddFiles_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -280,6 +281,121 @@ namespace DocumentUploader
             }
         }
 
+        public void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("✅ Botão de teste funcionou perfeitamente!", "Teste de Sucesso");
+
+            try
+            {
+                if (SelectedFiles == null)
+                {
+                    MessageBox.Show("❌ SelectedFiles é null!", "Erro");
+                    return;
+                }
+
+                string testFile = $"TESTE_{DateTime.Now:HHmmss}.docx";
+                SelectedFiles.Add(testFile);
+
+                // Forçar atualização da interface
+                if (filesListBox != null)
+                {
+                    filesListBox.Items.Refresh();
+                    filesListBox.UpdateLayout();
+                }
+
+                MessageBox.Show($"✅ Ficheiro de teste adicionado!\nTotal na lista: {SelectedFiles.Count}\nÚltimo item: {testFile}", "Sucesso");
+
+                // Atualizar botão de compilação
+                CheckCompileEnabled();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Erro no teste: {ex.Message}\n\nStack trace:\n{ex.StackTrace}", "Erro no Teste");
+            }
+        }
+
+        // Método melhorado para verificar o estado da compilação
+        private void CheckCompileEnabled()
+        {
+            try
+            {
+                bool shouldEnable = SelectedFiles != null && SelectedFiles.Count > 0;
+
+                Console.WriteLine($"🔘 CheckCompileEnabled: {SelectedFiles?.Count ?? 0} ficheiros, botão será {(shouldEnable ? "ATIVADO" : "DESATIVADO")}");
+
+                if (btnCompile != null)
+                {
+                    btnCompile.IsEnabled = shouldEnable;
+                    Console.WriteLine($"✅ Botão compilar atualizado: {btnCompile.IsEnabled}");
+                }
+                else
+                {
+                    Console.WriteLine("❌ btnCompile é null!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro em CheckCompileEnabled: {ex.Message}");
+            }
+        }
+
+        // Método melhorado para atualizar status
+        private void UpdateStatus(string message)
+        {
+            try
+            {
+                Console.WriteLine($"📢 Status: {message}");
+
+                Dispatcher.Invoke(() =>
+                {
+                    if (statusTextBlock != null)
+                    {
+                        statusTextBlock.Text = message;
+                        Console.WriteLine("✅ Status atualizado na UI");
+                    }
+                    else
+                    {
+                        Console.WriteLine("❌ statusTextBlock é null!");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao atualizar status: {ex.Message}");
+            }
+        }
+
+        // Adicione este método para teste manual (pode remover depois)
+        private void TestAddFiles()
+        {
+            Console.WriteLine("🧪 TESTE: Adicionando ficheiro manualmente...");
+
+            if (SelectedFiles == null)
+            {
+                Console.WriteLine("❌ SelectedFiles é null no teste!");
+                return;
+            }
+
+            // Adicionar um ficheiro de teste
+            string testFile = @"C:\temp\teste.docx"; // Coloque aqui um caminho válido para teste
+
+            if (File.Exists(testFile))
+            {
+                SelectedFiles.Add(testFile);
+                Console.WriteLine($"✅ Ficheiro de teste adicionado: {SelectedFiles.Count} items na lista");
+
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    filesListBox.Items.Refresh();
+                    Console.WriteLine($"✅ Interface atualizada - Items visíveis: {filesListBox.Items.Count}");
+                }));
+            }
+            else
+            {
+                Console.WriteLine($"❌ Ficheiro de teste não existe: {testFile}");
+            }
+        }
+
         // Método auxiliar para verificar se o SelectedFiles está inicializado corretamente
         private void VerifySelectedFilesInitialization()
         {
@@ -294,6 +410,34 @@ namespace DocumentUploader
             {
                 debugTerminal?.WriteLineError("❌ filesListBox.ItemsSource é null! Reconectando...");
                 filesListBox.ItemsSource = SelectedFiles;
+            }
+        }
+
+        // ADICIONE este método de teste temporário tt
+        private void TestAddButton()
+        {
+            try
+            {
+                MessageBox.Show("Teste: Adicionando ficheiro manualmente...", "Debug");
+
+                // Teste básico da coleção
+                if (SelectedFiles == null)
+                {
+                    MessageBox.Show("SelectedFiles é null!", "Erro");
+                    return;
+                }
+
+                SelectedFiles.Add("TESTE_FICHEIRO.docx");
+
+                Dispatcher.BeginInvoke(() =>
+                {
+                    filesListBox.Items.Refresh();
+                    MessageBox.Show($"Total de items: {SelectedFiles.Count}", "Sucesso");
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro no teste: {ex.Message}", "Erro");
             }
         }
 
@@ -337,9 +481,41 @@ namespace DocumentUploader
             }
         }
 
-        private void CheckCompileEnabled()
+        
+
+        // ADICIONE estes métodos à classe CompileDocumentsWindow no arquivo .xaml.cs
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            btnCompile.IsEnabled = SelectedFiles.Count > 0;
+            MessageBox.Show("Janela carregada! Verificando componentes...", "Debug");
+
+            // Verificar componentes críticos
+            if (filesListBox == null)
+                MessageBox.Show("❌ filesListBox é NULL!", "Erro");
+            else
+                MessageBox.Show("✅ filesListBox OK", "Debug");
+
+            if (SelectedFiles == null)
+                MessageBox.Show("❌ SelectedFiles é NULL!", "Erro");
+            else
+                MessageBox.Show($"✅ SelectedFiles OK - Count: {SelectedFiles.Count}", "Debug");
+
+            if (btnCompile == null)
+                MessageBox.Show("❌ btnCompile é NULL!", "Erro");
+            else
+                MessageBox.Show("✅ btnCompile OK", "Debug");
+
+            if (btnAddFiles == null)
+                MessageBox.Show("❌ btnAddFiles é NULL!", "Erro");
+            else
+                MessageBox.Show("✅ btnAddFiles OK", "Debug");
+
+            // Verificar conexão
+            if (filesListBox != null && filesListBox.ItemsSource != SelectedFiles)
+            {
+                MessageBox.Show("⚠️ Reconectando ItemsSource...", "Aviso");
+                filesListBox.ItemsSource = SelectedFiles;
+            }
         }
 
         private async void Compile_Click(object sender, RoutedEventArgs e)
@@ -423,152 +599,610 @@ namespace DocumentUploader
             }
         }
 
-        private void UpdateStatus(string message)
-        {
-            Dispatcher.Invoke(() => statusTextBlock.Text = message);
-        }
+        // SUBSTITUA o método CreateRevistaDocument e métodos relacionados
 
         private void CreateRevistaDocument(string outputPath)
         {
             debugTerminal?.WriteLine("📄 Criando documento Word...");
 
-            using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(outputPath, WordprocessingDocumentType.Document))
+            try
             {
-                MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
-                mainPart.Document = new Document(new Body());
-                Body body = mainPart.Document.Body;
+                // Garantir que a pasta de destino existe
+                string directory = Path.GetDirectoryName(outputPath);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
 
-                debugTerminal?.WriteLine("🎨 Definindo estilos do documento...");
+                // Apagar ficheiro se já existir
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
 
-                // Define styles
+                using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(outputPath, WordprocessingDocumentType.Document))
+                {
+                    // Criar estrutura básica válida
+                    MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
+
+                    // Documento base
+                    mainPart.Document = new Document();
+                    Body body = new Body();
+                    mainPart.Document.AppendChild(body);
+
+                    debugTerminal?.WriteLine("🔍 Processando artigos...");
+
+                    // Processar informações dos artigos
+                    var allAuthors = new List<Author>();
+                    var articleInfoList = new List<ArticleInfo>();
+
+                    foreach (var article in SelectedFiles)
+                    {
+                        var articleInfo = ExtractArticleInfoSafe(article);
+                        if (articleInfo != null)
+                        {
+                            articleInfoList.Add(articleInfo);
+                            allAuthors.AddRange(articleInfo.Authors);
+                        }
+                    }
+
+                    // Remover autores duplicados
+                    allAuthors = allAuthors.GroupBy(a => a.Email ?? a.Nome)
+                        .Select(g => g.First())
+                        .OrderBy(a => a.Nome)
+                        .ToList();
+
+                    debugTerminal?.WriteLine("📑 Construindo documento...");
+
+                    // 1. CAPA
+                    debugTerminal?.WriteLine("1️⃣ Capa");
+                    AddSimpleSection(body, "CAPA DA REVISTA", ReadFileContent(capaFilePath));
+                    AddSimplePageBreak(body);
+
+                    // 2. PÁGINA EM BRANCO
+                    debugTerminal?.WriteLine("2️⃣ Página em Branco");
+                    AddSimpleParagraph(body, "");
+                    AddSimplePageBreak(body);
+
+                    // 3. FICHA TÉCNICA
+                    debugTerminal?.WriteLine("3️⃣ Ficha Técnica");
+                    string fichaTecnicaContent = ReadFileContent(GetFichaTecnicaPath());
+                    if (string.IsNullOrEmpty(fichaTecnicaContent))
+                    {
+                        fichaTecnicaContent = "Ficha Técnica - Ficheiro não encontrado";
+                    }
+                    AddSimpleSection(body, "FICHA TÉCNICA", fichaTecnicaContent);
+                    AddSimplePageBreak(body);
+
+                    // 4. CONSELHO EDITORIAL
+                    debugTerminal?.WriteLine("4️⃣ Conselho Editorial");
+                    AddSimpleSection(body, "CONSELHO EDITORIAL", ReadFileContent(conselhoFilePath));
+                    AddSimplePageBreak(body);
+
+                    // 5. LISTA DE AUTORES
+                    debugTerminal?.WriteLine("5️⃣ Lista de Autores");
+                    AddAuthorListSimple(body, allAuthors);
+                    AddSimplePageBreak(body);
+
+                    // 6. ÍNDICE
+                    debugTerminal?.WriteLine("6️⃣ Índice");
+                    AddIndexSimple(body, articleInfoList);
+                    AddSimplePageBreak(body);
+
+                    // 7. EDITORIAL
+                    debugTerminal?.WriteLine("7️⃣ Editorial");
+                    AddSimpleSection(body, "EDITORIAL", ReadFileContent(editorialFilePath));
+                    AddSimplePageBreak(body);
+
+                    // 8. ARTIGOS
+                    debugTerminal?.WriteLine("8️⃣ Artigos");
+                    int count = 1;
+                    foreach (var article in articleInfoList)
+                    {
+                        debugTerminal?.WriteLine($"   Artigo {count}: {article.Title}");
+                        AddArticleSimple(body, article);
+                        AddSimplePageBreak(body);
+                        count++;
+                    }
+
+                    // Salvar documento
+                    debugTerminal?.WriteLine("💾 Salvando documento...");
+                    mainPart.Document.Save();
+
+                    debugTerminal?.WriteLineSuccess("✨ Documento criado com sucesso!");
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"ERRO CRÍTICO: {ex.Message}");
+                debugTerminal?.WriteLineError($"Stack: {ex.StackTrace}");
+                throw new InvalidOperationException($"Falha ao criar documento: {ex.Message}", ex);
+            }
+        }
+
+        // Método seguro para extrair informações do artigo
+        private ArticleInfo ExtractArticleInfoSafe(string filePath)
+        {
+            var articleInfo = new ArticleInfo
+            {
+                FilePath = filePath,
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Authors = new List<Author>()
+            };
+
+            try
+            {
+                string content = ReadFileContent(filePath);
+                if (!string.IsNullOrEmpty(content))
+                {
+                    // Extrair título da primeira linha não vazia
+                    var lines = content.Split('\n');
+                    foreach (var line in lines)
+                    {
+                        string cleanLine = line.Trim();
+                        if (!string.IsNullOrEmpty(cleanLine))
+                        {
+                            articleInfo.Title = cleanLine;
+                            break;
+                        }
+                    }
+
+                    // Tentativa simples de extrair autores
+                    foreach (var line in lines.Take(10)) // Verificar apenas as primeiras 10 linhas
+                    {
+                        var author = ParseAuthorSimple(line);
+                        if (author != null)
+                        {
+                            articleInfo.Authors.Add(author);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineWarning($"Aviso ao processar {Path.GetFileName(filePath)}: {ex.Message}");
+            }
+
+            return articleInfo;
+        }
+
+        // Método simples para ler conteúdo de arquivo
+        private string ReadFileContent(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, false))
+                {
+                    if (doc.MainDocumentPart?.Document?.Body != null)
+                    {
+                        return doc.MainDocumentPart.Document.Body.InnerText;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineWarning($"Erro ao ler {Path.GetFileName(filePath)}: {ex.Message}");
+                return $"Erro ao carregar conteúdo de {Path.GetFileName(filePath)}";
+            }
+
+            return string.Empty;
+        }
+
+        // Método para parsing simples de autor
+        private Author ParseAuthorSimple(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+
+            var emailMatch = Regex.Match(text, @"\b[\w\.-]+@[\w\.-]+\.\w+\b");
+            if (emailMatch.Success)
+            {
+                return new Author
+                {
+                    Nome = text.Replace(emailMatch.Value, "").Trim(),
+                    Email = emailMatch.Value
+                };
+            }
+
+            // Se tiver mais de 50 caracteres, provavelmente não é um autor
+            if (text.Length > 50) return null;
+
+            // Se contiver palavras-chave comuns de não-autor
+            if (text.ToLower().Contains("resumo") || text.ToLower().Contains("abstract") ||
+                text.ToLower().Contains("introdução") || text.ToLower().Contains("palavras-chave"))
+                return null;
+
+            return new Author { Nome = text.Trim() };
+        }
+
+        // Adicionar seção simples
+        private void AddSimpleSection(Body body, string title, string content)
+        {
+            // Título
+            if (!string.IsNullOrEmpty(title))
+            {
+                Paragraph titlePara = new Paragraph();
+                Run titleRun = new Run();
+                RunProperties titleProps = new RunProperties();
+                titleProps.Append(new Bold());
+                titleProps.Append(new FontSize() { Val = "28" });
+                titleRun.RunProperties = titleProps;
+                titleRun.Append(new Text(title));
+                titlePara.Append(titleRun);
+                body.Append(titlePara);
+
+                // Espaço após título
+                body.Append(new Paragraph());
+            }
+
+            // Conteúdo
+            if (!string.IsNullOrEmpty(content))
+            {
+                var lines = content.Split('\n');
+                foreach (var line in lines)
+                {
+                    string cleanLine = line.Trim();
+                    if (!string.IsNullOrEmpty(cleanLine))
+                    {
+                        AddSimpleParagraph(body, cleanLine);
+                    }
+                }
+            }
+            else
+            {
+                AddSimpleParagraph(body, "Conteúdo não disponível");
+            }
+        }
+
+        // Adicionar parágrafo simples
+        private void AddSimpleParagraph(Body body, string text)
+        {
+            Paragraph para = new Paragraph();
+            Run run = new Run();
+            run.Append(new Text(text ?? ""));
+            para.Append(run);
+            body.Append(para);
+        }
+
+        // Adicionar quebra de página simples
+        private void AddSimplePageBreak(Body body)
+        {
+            Paragraph para = new Paragraph();
+            Run run = new Run();
+            run.Append(new Break() { Type = BreakValues.Page });
+            para.Append(run);
+            body.Append(para);
+        }
+
+        // Adicionar lista de autores simples
+        private void AddAuthorListSimple(Body body, List<Author> authors)
+        {
+            AddSimpleSection(body, "LISTA DE AUTORES", "");
+
+            foreach (var author in authors)
+            {
+                string authorText = author.Nome;
+                if (!string.IsNullOrEmpty(author.Email))
+                    authorText += $" - {author.Email}";
+                if (!string.IsNullOrEmpty(author.Escola))
+                    authorText += $" - {author.Escola}";
+
+                AddSimpleParagraph(body, $"• {authorText}");
+            }
+        }
+
+        // Adicionar índice simples
+        private void AddIndexSimple(Body body, List<ArticleInfo> articles)
+        {
+            AddSimpleSection(body, "ÍNDICE", "");
+
+            AddSimpleParagraph(body, "Editorial ................................. XX");
+
+            foreach (var article in articles)
+            {
+                AddSimpleParagraph(body, $"{article.Title} ................................. XX");
+
+                if (article.Authors.Count > 0)
+                {
+                    string authors = string.Join(", ", article.Authors.Select(a => a.Nome));
+                    AddSimpleParagraph(body, $"    {authors}");
+                }
+            }
+        }
+
+        // Adicionar artigo simples
+        private void AddArticleSimple(Body body, ArticleInfo article)
+        {
+            // Título do artigo
+            Paragraph titlePara = new Paragraph();
+            Run titleRun = new Run();
+            RunProperties titleProps = new RunProperties();
+            titleProps.Append(new Bold());
+            titleProps.Append(new FontSize() { Val = "24" });
+            titleRun.RunProperties = titleProps;
+            titleRun.Append(new Text(article.Title));
+            titlePara.Append(titleRun);
+            body.Append(titlePara);
+
+            // Autores
+            if (article.Authors.Count > 0)
+            {
+                Paragraph authorPara = new Paragraph();
+                Run authorRun = new Run();
+                RunProperties authorProps = new RunProperties();
+                authorProps.Append(new Italic());
+                authorRun.RunProperties = authorProps;
+                string authorNames = string.Join(", ", article.Authors.Select(a => a.Nome));
+                authorRun.Append(new Text(authorNames));
+                authorPara.Append(authorRun);
+                body.Append(authorPara);
+            }
+
+            // Espaço
+            body.Append(new Paragraph());
+
+            // Conteúdo do artigo
+            string content = ReadFileContent(article.FilePath);
+            if (!string.IsNullOrEmpty(content))
+            {
+                var lines = content.Split('\n');
+                // Pular título e autores (primeiras linhas)
+                var contentLines = lines.Skip(Math.Min(3, lines.Length)).ToArray();
+
+                foreach (var line in contentLines)
+                {
+                    string cleanLine = line.Trim();
+                    if (!string.IsNullOrEmpty(cleanLine))
+                    {
+                        AddSimpleParagraph(body, cleanLine);
+                    }
+                }
+            }
+            else
+            {
+                AddSimpleParagraph(body, "Conteúdo do artigo não disponível.");
+            }
+        }
+
+        // Método auxiliar para criar estilos de forma segura
+        private void CreateDocumentStyles(MainDocumentPart mainPart)
+        {
+            try
+            {
                 StyleDefinitionsPart stylesPart = mainPart.AddNewPart<StyleDefinitionsPart>();
                 Styles styles = new Styles();
-                stylesPart.Styles = styles;
-                AddCustomStyles(styles);
 
-                debugTerminal?.WriteLine("🔍 Iniciando extração de informações dos artigos...");
-                debugTerminal?.WriteSeparator();
-
-                // Extract all authors and article info
-                articleAuthors.Clear();
-                var allAuthors = new List<Author>();
-                var articleInfoList = new List<ArticleInfo>();
-
-                int articleCount = 1;
-                foreach (var article in SelectedFiles)
+                // Estilo para títulos
+                var headingStyle = new DocumentFormat.OpenXml.Wordprocessing.Style()
                 {
-                    debugTerminal?.WriteLine($"📖 Processando artigo {articleCount}/{SelectedFiles.Count}: {Path.GetFileName(article)}");
+                    Type = StyleValues.Paragraph,
+                    StyleId = "Heading1"
+                };
+                headingStyle.Append(new StyleName() { Val = "Heading 1" });
 
-                    var articleInfo = ExtractArticleInfo(article);
-                    if (articleInfo != null)
+                var headingPPr = new StyleParagraphProperties();
+                headingPPr.Append(new SpacingBetweenLines() { Before = "240", After = "120" });
+                headingStyle.Append(headingPPr);
+
+                var headingRPr = new StyleRunProperties();
+                headingRPr.Append(new Bold());
+                headingRPr.Append(new FontSize() { Val = "32" });
+                headingStyle.Append(headingRPr);
+
+                styles.Append(headingStyle);
+                stylesPart.Styles = styles;
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineWarning($"Aviso ao criar estilos: {ex.Message}");
+            }
+        }
+
+        // Método seguro para adicionar documentos
+        private void AddDocumentSafely(Body body, string filePath, string title)
+        {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                debugTerminal?.WriteLineWarning($"   Ficheiro não encontrado: {filePath}");
+                AddPlaceholderSection(body, title, $"{title} - Ficheiro não encontrado");
+                return;
+            }
+
+            try
+            {
+                using (WordprocessingDocument sourceDoc = WordprocessingDocument.Open(filePath, false))
+                {
+                    if (sourceDoc.MainDocumentPart?.Document?.Body != null)
                     {
-                        articleInfoList.Add(articleInfo);
-                        articleAuthors[article] = articleInfo.Authors;
-                        allAuthors.AddRange(articleInfo.Authors);
-
-                        debugTerminal?.WriteLineInfo($"   Título: {articleInfo.Title}");
-                        debugTerminal?.WriteLineInfo($"   Autores encontrados: {articleInfo.Authors.Count}");
-
-                        foreach (var author in articleInfo.Authors)
+                        foreach (var element in sourceDoc.MainDocumentPart.Document.Body.Elements())
                         {
-                            debugTerminal?.WriteLine($"     👤 {author.Nome}" +
-                                (!string.IsNullOrEmpty(author.Email) ? $" ({author.Email})" : "") +
-                                (!string.IsNullOrEmpty(author.Escola) ? $" - {author.Escola}" : ""));
+                            var clonedElement = element.CloneNode(true);
+                            body.AppendChild(clonedElement);
                         }
+                        debugTerminal?.WriteLineSuccess($"   ✅ {title} adicionado com sucesso");
                     }
                     else
                     {
-                        debugTerminal?.WriteLineWarning($"   Falhou ao extrair informações do artigo");
+                        debugTerminal?.WriteLineWarning($"   Documento {title} está vazio ou corrompido");
+                        AddPlaceholderSection(body, title, $"{title} - Documento vazio ou corrompido");
                     }
-
-                    debugTerminal?.WriteLine("");
-                    articleCount++;
                 }
-
-                debugTerminal?.WriteSeparator();
-                debugTerminal?.WriteLine("👥 Processando lista de autores...");
-
-                // Remove duplicates from author list
-                int totalAuthors = allAuthors.Count;
-                allAuthors = allAuthors.GroupBy(a => a.Email ?? a.Nome)
-                    .Select(g => g.First())
-                    .OrderBy(a => a.Nome)
-                    .ToList();
-
-                debugTerminal?.WriteLineSuccess($"Lista de autores criada: {allAuthors.Count} autores únicos (de {totalAuthors} totais)");
-
-                foreach (var author in allAuthors)
-                {
-                    debugTerminal?.WriteLine($"  📝 {author.Nome}" +
-                        (!string.IsNullOrEmpty(author.Email) ? $" - {author.Email}" : "") +
-                        (!string.IsNullOrEmpty(author.Escola) ? $" - {author.Escola}" : ""));
-                }
-
-                debugTerminal?.WriteSeparator();
-                debugTerminal?.WriteLine("📑 Montando documento na ordem específica...");
-
-                // ORDEM SOLICITADA:
-                // 1. Capa
-                debugTerminal?.WriteLine("1️⃣ Adicionando Capa...");
-                AddDocument(body, capaFilePath, "Capa");
-                AddPageBreak(body);
-
-                // 2. Folha em Branco
-                debugTerminal?.WriteLine("2️⃣ Adicionando Página em Branco...");
-                AddBlankPage(body);
-                AddPageBreak(body);
-
-                // 3. Ficha Técnica
-                debugTerminal?.WriteLine("3️⃣ Adicionando Ficha Técnica...");
-                AddDocument(body, GetFichaTecnicaPath(), "Ficha Técnica");
-                AddPageBreak(body);
-
-                // 4. Conselho Editorial
-                debugTerminal?.WriteLine("4️⃣ Adicionando Conselho Editorial...");
-                AddDocument(body, conselhoFilePath, "Conselho Editorial");
-                AddPageBreak(body);
-
-                // 5. Lista de Autores
-                debugTerminal?.WriteLine("5️⃣ Adicionando Lista de Autores...");
-                AddAuthorList(body, allAuthors);
-                AddPageBreak(body);
-
-                // 6. Índice
-                debugTerminal?.WriteLine("6️⃣ Adicionando Índice...");
-                AddTableOfContents(body, articleInfoList);
-                AddPageBreak(body);
-
-                // 7. Editorial
-                debugTerminal?.WriteLine("7️⃣ Adicionando Editorial...");
-                AddArticleWithHeading(body, editorialFilePath, "Editorial", new List<Author>());
-                AddPageBreak(body);
-
-                // 8. Artigos
-                debugTerminal?.WriteLine("8️⃣ Adicionando Artigos...");
-                int artCount = 1;
-                foreach (var articleInfo in articleInfoList)
-                {
-                    debugTerminal?.WriteLine($"   📄 Artigo {artCount}/{articleInfoList.Count}: {articleInfo.Title}");
-                    AddArticleWithHeading(body, articleInfo.FilePath, articleInfo.Title, articleInfo.Authors);
-                    AddPageBreak(body);
-                    artCount++;
-                }
-
-                debugTerminal?.WriteLine("⚙️ Configurando atualização automática de campos...");
-                // Update fields (for TOC)
-                AddSettingsToDocument(mainPart);
-
-                debugTerminal?.WriteLine("💾 Salvando documento...");
-                mainPart.Document.Save();
-
-                debugTerminal?.WriteSeparator();
-                debugTerminal?.WriteLineSuccess("✨ Documento compilado com sucesso!");
-                debugTerminal?.WriteLine($"📊 Estatísticas finais:");
-                debugTerminal?.WriteLine($"   • Total de artigos: {articleInfoList.Count}");
-                debugTerminal?.WriteLine($"   • Total de autores únicos: {allAuthors.Count}");
-                debugTerminal?.WriteLine($"   • Localização: {outputPath}");
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"   Erro ao processar {title}: {ex.Message}");
+                AddPlaceholderSection(body, title, $"Erro ao carregar {title}: {ex.Message}");
             }
         }
+
+        // Método para adicionar seção placeholder
+        private void AddPlaceholderSection(Body body, string title, string message)
+        {
+            var titlePara = new Paragraph();
+            titlePara.ParagraphProperties = new ParagraphProperties(
+                new ParagraphStyleId() { Val = "Heading1" }
+            );
+            titlePara.Append(new Run(new Text(title)));
+            body.AppendChild(titlePara);
+
+            var messagePara = new Paragraph();
+            messagePara.Append(new Run(new Text(message)));
+            body.AppendChild(messagePara);
+        }
+
+        // Método seguro para adicionar lista de autores
+        private void AddAuthorListSafely(Body body, List<Author> authors)
+        {
+            try
+            {
+                // Título
+                var titleParagraph = new Paragraph();
+                titleParagraph.ParagraphProperties = new ParagraphProperties(
+                    new ParagraphStyleId() { Val = "Heading1" }
+                );
+                titleParagraph.Append(new Run(new Text("Lista de Autores")));
+                body.AppendChild(titleParagraph);
+
+                // Autores
+                foreach (var author in authors)
+                {
+                    string authorText = author.Nome;
+                    if (!string.IsNullOrEmpty(author.Email))
+                        authorText += $" - {author.Email}";
+                    if (!string.IsNullOrEmpty(author.Escola))
+                        authorText += $" - {author.Escola}";
+
+                    var authorParagraph = new Paragraph();
+                    authorParagraph.Append(new Run(new Text(authorText)));
+                    body.AppendChild(authorParagraph);
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"   Erro ao criar lista de autores: {ex.Message}");
+                AddPlaceholderSection(body, "Lista de Autores", "Erro ao criar lista de autores");
+            }
+        }
+
+        // Método seguro para adicionar índice
+        private void AddTableOfContentsSafely(Body body, List<ArticleInfo> articles)
+        {
+            try
+            {
+                // Título
+                var titleParagraph = new Paragraph();
+                titleParagraph.ParagraphProperties = new ParagraphProperties(
+                    new ParagraphStyleId() { Val = "Heading1" }
+                );
+                titleParagraph.Append(new Run(new Text("Índice")));
+                body.AppendChild(titleParagraph);
+
+                // Editorial
+                var editorialPara = new Paragraph();
+                var editorialRun = new Run(new Text("Editorial"));
+                editorialRun.RunProperties = new RunProperties(new Bold());
+                editorialPara.Append(editorialRun);
+                editorialPara.Append(new Run(new Text(" ................... XX")));
+                body.AppendChild(editorialPara);
+
+                // Artigos
+                foreach (var article in articles)
+                {
+                    var articlePara = new Paragraph();
+                    var articleRun = new Run(new Text(article.Title));
+                    articleRun.RunProperties = new RunProperties(new Bold());
+                    articlePara.Append(articleRun);
+                    articlePara.Append(new Run(new Text(" ................... XX")));
+                    body.AppendChild(articlePara);
+
+                    // Autores
+                    if (article.Authors.Count > 0)
+                    {
+                        var authorsPara = new Paragraph();
+                        authorsPara.ParagraphProperties = new ParagraphProperties(
+                            new Indentation() { Left = "720" }
+                        );
+                        string authorNames = string.Join(", ", article.Authors.Select(a => a.Nome));
+                        var authorsRun = new Run(new Text(authorNames));
+                        authorsRun.RunProperties = new RunProperties(new Italic());
+                        authorsPara.Append(authorsRun);
+                        body.AppendChild(authorsPara);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"   Erro ao criar índice: {ex.Message}");
+                AddPlaceholderSection(body, "Índice", "Erro ao criar índice");
+            }
+        }
+
+        // Método seguro para adicionar artigos com cabeçalho
+        private void AddArticleWithHeadingSafely(Body body, string filePath, string title, List<Author> authors)
+        {
+            try
+            {
+                // Título do artigo
+                var titleParagraph = new Paragraph();
+                titleParagraph.ParagraphProperties = new ParagraphProperties(
+                    new ParagraphStyleId() { Val = "Heading1" }
+                );
+                titleParagraph.Append(new Run(new Text(title)));
+                body.AppendChild(titleParagraph);
+
+                // Autores
+                if (authors.Count > 0)
+                {
+                    var authorParagraph = new Paragraph();
+                    var authorRun = new Run();
+                    authorRun.RunProperties = new RunProperties(new Italic());
+                    string authorNames = string.Join(", ", authors.Select(a => a.Nome));
+                    authorRun.Append(new Text(authorNames));
+                    authorParagraph.Append(authorRun);
+                    authorParagraph.ParagraphProperties = new ParagraphProperties(
+                        new SpacingBetweenLines() { After = "240" }
+                    );
+                    body.AppendChild(authorParagraph);
+                }
+
+                // Conteúdo do artigo
+                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                {
+                    using (WordprocessingDocument articleDoc = WordprocessingDocument.Open(filePath, false))
+                    {
+                        if (articleDoc.MainDocumentPart?.Document?.Body != null)
+                        {
+                            var elements = articleDoc.MainDocumentPart.Document.Body.Elements().ToList();
+
+                            // Pular título e autores originais
+                            int startIndex = Math.Min(authors.Count + 1, elements.Count);
+
+                            for (int i = startIndex; i < elements.Count; i++)
+                            {
+                                var clonedElement = elements[i].CloneNode(true);
+                                body.AppendChild(clonedElement);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var errorPara = new Paragraph();
+                    errorPara.Append(new Run(new Text($"Conteúdo do artigo não disponível: {Path.GetFileName(filePath)}")));
+                    body.AppendChild(errorPara);
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"   Erro ao adicionar artigo {title}: {ex.Message}");
+                AddPlaceholderSection(body, title, $"Erro ao carregar artigo: {ex.Message}");
+            }
+        }
+
 
         private void AddCustomStyles(Styles styles)
         {
@@ -724,6 +1358,232 @@ namespace DocumentUploader
                 Escola = school,
                 Id = id
             };
+        }
+
+        private void AddArticleWithFullFormatting(WordprocessingDocument targetDoc, string sourceFilePath, string title, List<Author> authors)
+        {
+            if (string.IsNullOrEmpty(sourceFilePath) || !File.Exists(sourceFilePath))
+            {
+                debugTerminal?.WriteLineWarning($"   Arquivo não encontrado: {sourceFilePath}");
+                return;
+            }
+
+            try
+            {
+                // Adicionar título do artigo
+                var titleParagraph = new Paragraph();
+                titleParagraph.ParagraphProperties = new ParagraphProperties(
+                    new ParagraphStyleId() { Val = "Heading1" }
+                );
+                var titleRun = new Run(new Text(title));
+                titleParagraph.Append(titleRun);
+                targetDoc.MainDocumentPart.Document.Body.AppendChild(titleParagraph);
+
+                // Adicionar autores
+                if (authors.Count > 0)
+                {
+                    var authorParagraph = new Paragraph();
+                    var authorRun = new Run();
+                    authorRun.RunProperties = new RunProperties(new Italic());
+                    string authorNames = string.Join(", ", authors.Select(a => a.Nome));
+                    authorRun.Append(new Text(authorNames));
+                    authorParagraph.Append(authorRun);
+                    authorParagraph.ParagraphProperties = new ParagraphProperties(
+                        new SpacingBetweenLines() { After = "240" }
+                    );
+                    targetDoc.MainDocumentPart.Document.Body.AppendChild(authorParagraph);
+                }
+
+                // Copiar conteúdo do artigo com formatação completa
+                using (WordprocessingDocument sourceDoc = WordprocessingDocument.Open(sourceFilePath, false))
+                {
+                    debugTerminal?.WriteLineInfo($"   Copiando formatação do artigo {Path.GetFileName(sourceFilePath)}...");
+
+                    // Copiar estilos específicos do artigo
+                    CopyStyles(sourceDoc, targetDoc);
+
+                    // Copiar partes relacionadas (imagens, gráficos, etc.)
+                    CopyRelatedParts(sourceDoc, targetDoc);
+
+                    // Copiar conteúdo do artigo (pulando título e autores originais)
+                    if (sourceDoc.MainDocumentPart?.Document?.Body != null)
+                    {
+                        var sourceElements = sourceDoc.MainDocumentPart.Document.Body.Elements().ToList();
+
+                        // Pular os primeiros parágrafos (título e autores)
+                        int startIndex = Math.Min(authors.Count + 1, sourceElements.Count);
+
+                        for (int i = startIndex; i < sourceElements.Count; i++)
+                        {
+                            var clonedElement = sourceElements[i].CloneNode(true);
+                            targetDoc.MainDocumentPart.Document.Body.AppendChild(clonedElement);
+                        }
+                    }
+
+                    debugTerminal?.WriteLineSuccess($"   ✅ Artigo {Path.GetFileName(sourceFilePath)} copiado com formatação completa");
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"   ❌ Erro ao copiar artigo {title}: {ex.Message}");
+                var errorPara = new Paragraph(new Run(new Text($"Erro ao carregar artigo: {ex.Message}")));
+                targetDoc.MainDocumentPart.Document.Body.AppendChild(errorPara);
+            }
+        }
+
+        // Método para copiar estilos do documento fonte
+        private void CopyStyles(WordprocessingDocument sourceDoc, WordprocessingDocument targetDoc)
+        {
+            if (sourceDoc.MainDocumentPart.StyleDefinitionsPart == null) return;
+
+            // Garantir que o documento de destino tem StyleDefinitionsPart
+            if (targetDoc.MainDocumentPart.StyleDefinitionsPart == null)
+            {
+                targetDoc.MainDocumentPart.AddNewPart<StyleDefinitionsPart>();
+                targetDoc.MainDocumentPart.StyleDefinitionsPart.Styles = new Styles();
+            }
+
+            var sourceStyles = sourceDoc.MainDocumentPart.StyleDefinitionsPart.Styles;
+            var targetStyles = targetDoc.MainDocumentPart.StyleDefinitionsPart.Styles;
+
+            if (sourceStyles?.Elements<DocumentFormat.OpenXml.Wordprocessing.Style>() != null)
+            {
+                foreach (var style in sourceStyles.Elements<DocumentFormat.OpenXml.Wordprocessing.Style>())
+                {
+                    // Verificar se o estilo já existe no documento de destino
+                    string styleId = style.StyleId?.Value ?? "";
+                    if (!string.IsNullOrEmpty(styleId))
+                    {
+                        var existingStyle = targetStyles.Elements<DocumentFormat.OpenXml.Wordprocessing.Style>()
+                            .FirstOrDefault(s => s.StyleId?.Value == styleId);
+
+                        if (existingStyle == null)
+                        {
+                            // Clonar e adicionar o estilo
+                            var clonedStyle = (DocumentFormat.OpenXml.Wordprocessing.Style)style.CloneNode(true);
+                            targetStyles.AppendChild(clonedStyle);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Método para copiar temas
+        private void CopyTheme(WordprocessingDocument sourceDoc, WordprocessingDocument targetDoc)
+        {
+            if (sourceDoc.MainDocumentPart.ThemePart != null && targetDoc.MainDocumentPart.ThemePart == null)
+            {
+                var targetThemePart = targetDoc.MainDocumentPart.AddNewPart<ThemePart>();
+                targetThemePart.Theme = (DocumentFormat.OpenXml.Drawing.Theme)sourceDoc.MainDocumentPart.ThemePart.Theme.CloneNode(true);
+            }
+        }
+
+        // Método para copiar partes relacionadas (imagens, gráficos, etc.)
+        private void CopyRelatedParts(WordprocessingDocument sourceDoc, WordprocessingDocument targetDoc)
+        {
+            try
+            {
+                // Copiar imagens
+                foreach (var imagePart in sourceDoc.MainDocumentPart.ImageParts)
+                {
+                    var targetImagePart = targetDoc.MainDocumentPart.AddImagePart(imagePart.ContentType);
+                    using (var sourceStream = imagePart.GetStream())
+                    using (var targetStream = targetImagePart.GetStream(FileMode.Create, FileAccess.Write))
+                    {
+                        sourceStream.CopyTo(targetStream);
+                    }
+
+                    // Atualizar referências de imagem
+                    UpdateImageReferences(targetDoc, imagePart.Uri.ToString(), targetImagePart.Uri.ToString());
+                }
+
+                // Copiar outras partes relacionadas conforme necessário
+                // Pode adicionar aqui outros tipos de parte como ChartParts, DiagramParts, etc.
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineWarning($"   ⚠️ Aviso ao copiar partes relacionadas: {ex.Message}");
+            }
+        }
+
+        // Método para atualizar referências de imagem
+        private void UpdateImageReferences(WordprocessingDocument targetDoc, string oldImageId, string newImageId)
+        {
+            try
+            {
+                var body = targetDoc.MainDocumentPart.Document.Body;
+
+                // Procurar e atualizar todas as referências de imagem
+                var blips = body.Descendants<DocumentFormat.OpenXml.Drawing.Blip>();
+                foreach (var blip in blips)
+                {
+                    if (blip.Embed?.Value == oldImageId)
+                    {
+                        blip.Embed = newImageId;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineWarning($"   ⚠️ Aviso ao atualizar referências de imagem: {ex.Message}");
+            }
+        }
+
+        // Método para copiar fontes personalizadas (se necessário)
+        private void CopyFonts(WordprocessingDocument sourceDoc, WordprocessingDocument targetDoc)
+        {
+            if (sourceDoc.MainDocumentPart.FontTablePart != null && targetDoc.MainDocumentPart.FontTablePart == null)
+            {
+                var targetFontTablePart = targetDoc.MainDocumentPart.AddNewPart<FontTablePart>();
+                targetFontTablePart.Fonts = (DocumentFormat.OpenXml.Wordprocessing.Fonts)sourceDoc.MainDocumentPart.FontTablePart.Fonts.CloneNode(true);
+            }
+        }
+
+        private void AddDocumentWithFullFormatting(WordprocessingDocument targetDoc, string sourceFilePath, string title)
+        {
+            if (string.IsNullOrEmpty(sourceFilePath) || !File.Exists(sourceFilePath))
+            {
+                debugTerminal?.WriteLineWarning($"   Arquivo não encontrado: {sourceFilePath}");
+                var errorPara = new Paragraph(new Run(new Text($"{title} - Ficheiro não encontrado")));
+                targetDoc.MainDocumentPart.Document.Body.AppendChild(errorPara);
+                return;
+            }
+
+            try
+            {
+                using (WordprocessingDocument sourceDoc = WordprocessingDocument.Open(sourceFilePath, false))
+                {
+                    debugTerminal?.WriteLineInfo($"   Copiando estilos e formatação de {Path.GetFileName(sourceFilePath)}...");
+
+                    // 1. Copiar estilos
+                    CopyStyles(sourceDoc, targetDoc);
+
+                    // 2. Copiar temas
+                    CopyTheme(sourceDoc, targetDoc);
+
+                    // 3. Copiar partes relacionadas (imagens, gráficos, etc.)
+                    CopyRelatedParts(sourceDoc, targetDoc);
+
+                    // 4. Copiar conteúdo do corpo do documento
+                    if (sourceDoc.MainDocumentPart?.Document?.Body != null)
+                    {
+                        var sourceElements = sourceDoc.MainDocumentPart.Document.Body.Elements().ToList();
+                        foreach (var element in sourceElements)
+                        {
+                            var clonedElement = element.CloneNode(true);
+                            targetDoc.MainDocumentPart.Document.Body.AppendChild(clonedElement);
+                        }
+                    }
+
+                    debugTerminal?.WriteLineSuccess($"   ✅ Formatação preservada para {Path.GetFileName(sourceFilePath)}");
+                }
+            }
+            catch (Exception ex)
+            {
+                debugTerminal?.WriteLineError($"   ❌ Erro ao copiar {title}: {ex.Message}");
+                var errorPara = new Paragraph(new Run(new Text($"Erro ao carregar {title}: {ex.Message}")));
+                targetDoc.MainDocumentPart.Document.Body.AppendChild(errorPara);
+            }
         }
 
         private void AddDocument(Body body, string filePath, string title)
