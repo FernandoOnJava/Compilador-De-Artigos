@@ -21,6 +21,8 @@
         <SolidColorBrush x:Key="WarningLightBrush" Color="#FFF5E6"/>
         <SolidColorBrush x:Key="ErrorBrush" Color="#E74C3C"/>
         <SolidColorBrush x:Key="ErrorLightBrush" Color="#FFE6E6"/>
+        <SolidColorBrush x:Key="InfoBrush" Color="#3498DB"/>
+        <SolidColorBrush x:Key="InfoLightBrush" Color="#EBF5FF"/>
         <SolidColorBrush x:Key="TextBrush" Color="#2C3E50"/>
         <SolidColorBrush x:Key="TextLightBrush" Color="#7F8C8D"/>
         <SolidColorBrush x:Key="BorderBrush" Color="#E0E6ED"/>
@@ -109,239 +111,344 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Style para TextBox modernos -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                         Focusable="False"
+                                         HorizontalScrollBarVisibility="Hidden"
+                                         VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <Grid Margin="30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Grid.Row="0" 
-                Style="{StaticResource ModernCardStyle}" 
-                Padding="30,25"
-                Margin="0,0,0,30">
-            <StackPanel>
-                <TextBlock Text="📚 Upload de Documentos" 
-                          FontSize="28" 
-                          FontWeight="Bold" 
-                          Foreground="{StaticResource PrimaryBrush}"
-                          HorizontalAlignment="Center"
-                          Margin="0,0,0,10"/>
-                <TextBlock Text="Carregue os seguintes documentos para proseguir com a compilação!" 
-                          FontSize="15" 
-                          Foreground="{StaticResource TextLightBrush}"
-                          HorizontalAlignment="Center"
-                          Margin="0,0,0,15"/>
-                <Border Background="{StaticResource AccentBrush}" 
-                        CornerRadius="15" 
-                        Padding="12,6"
-                        HorizontalAlignment="Center">
-                    <TextBlock Text="Formato obrigatório: .docx" 
-                              FontSize="12" 
-                              FontWeight="SemiBold"
-                              Foreground="{StaticResource TextBrush}"/>
-                </Border>
-            </StackPanel>
-        </Border>
+            <!-- Header -->
+            <Border Grid.Row="0" 
+                    Style="{StaticResource ModernCardStyle}" 
+                    Padding="30,25"
+                    Margin="0,0,0,30">
+                <StackPanel>
+                    <TextBlock Text="📚 Upload de Documentos" 
+                              FontSize="28" 
+                              FontWeight="Bold" 
+                              Foreground="{StaticResource PrimaryBrush}"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,10"/>
+                    <TextBlock Text="Carregue os seguintes documentos para proseguir com a compilação!" 
+                              FontSize="15" 
+                              Foreground="{StaticResource TextLightBrush}"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,15"/>
+                    <Border Background="{StaticResource AccentBrush}" 
+                            CornerRadius="15" 
+                            Padding="12,6"
+                            HorizontalAlignment="Center">
+                        <TextBlock Text="Formato obrigatório: .docx" 
+                                  FontSize="12" 
+                                  FontWeight="SemiBold"
+                                  Foreground="{StaticResource TextBrush}"/>
+                    </Border>
+                </StackPanel>
+            </Border>
 
-        <!-- Content Area -->
-        <Border Grid.Row="1" 
-                Style="{StaticResource ModernCardStyle}"
-                Padding="30">
-            <StackPanel>
+            <!-- Content Area -->
+            <Border Grid.Row="1" 
+                    Style="{StaticResource ModernCardStyle}"
+                    Padding="30">
+                <StackPanel>
 
-                <!-- Documento 1 - Capa -->
-                <Border Background="{StaticResource PrimaryLightBrush}" 
-                        CornerRadius="8" 
-                        Padding="20"
-                        Margin="0,0,0,20"
-                        BorderBrush="{StaticResource PrimaryBrush}"
-                        BorderThickness="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- Documento 1 - Capa -->
+                    <Border Background="{StaticResource PrimaryLightBrush}" 
+                            CornerRadius="8" 
+                            Padding="20"
+                            Margin="0,0,0,20"
+                            BorderBrush="{StaticResource PrimaryBrush}"
+                            BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" 
-                                Background="{StaticResource PrimaryBrush}"
-                                CornerRadius="20" 
-                                Width="40" 
-                                Height="40" 
-                                Margin="0,0,15,0">
-                            <TextBlock Text="1" 
-                                      Foreground="White" 
-                                      FontSize="16" 
-                                      FontWeight="Bold"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"/>
-                        </Border>
+                            <Border Grid.Column="0" 
+                                    Background="{StaticResource PrimaryBrush}"
+                                    CornerRadius="20" 
+                                    Width="40" 
+                                    Height="40" 
+                                    Margin="0,0,15,0">
+                                <TextBlock Text="1" 
+                                          Foreground="White" 
+                                          FontSize="16" 
+                                          FontWeight="Bold"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
 
-                        <StackPanel Grid.Column="1" 
-                                   VerticalAlignment="Center">
-                            <TextBlock Text="📄 Capa da Revista" 
-                                      FontSize="16" 
-                                      FontWeight="SemiBold"
-                                      Foreground="{StaticResource PrimaryBrush}"
-                                      Margin="0,0,0,5"/>
-                            <TextBlock x:Name="txtFile1" 
-                                      Text="Documento com o design e informações da capa" 
-                                      FontSize="13"
-                                      Foreground="{StaticResource TextLightBrush}"/>
-                        </StackPanel>
+                            <StackPanel Grid.Column="1" 
+                                       VerticalAlignment="Center">
+                                <TextBlock Text="📄 Capa da Revista" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold"
+                                          Foreground="{StaticResource PrimaryBrush}"
+                                          Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtFile1" 
+                                          Text="Documento com o design e informações da capa" 
+                                          FontSize="13"
+                                          Foreground="{StaticResource TextLightBrush}"/>
+                            </StackPanel>
 
-                        <Button Grid.Column="2" 
-                                x:Name="btnSelect1"
-                                Content=" Selecionar "
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Click="SelectFile1_Click"/>
-                    </Grid>
-                </Border>
+                            <Button Grid.Column="2" 
+                                    x:Name="btnSelect1"
+                                    Content=" Selecionar "
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Click="SelectFile1_Click"/>
+                        </Grid>
+                    </Border>
 
-                <!-- Documento 2 - Conselho Editorial -->
-                <Border Background="{StaticResource SuccessLightBrush}" 
-                        CornerRadius="8" 
-                        Padding="20"
-                        Margin="0,0,0,20"
-                        BorderBrush="{StaticResource SuccessBrush}"
-                        BorderThickness="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- Documento 2 - Conselho Editorial -->
+                    <Border Background="{StaticResource SuccessLightBrush}" 
+                            CornerRadius="8" 
+                            Padding="20"
+                            Margin="0,0,0,20"
+                            BorderBrush="{StaticResource SuccessBrush}"
+                            BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" 
-                                Background="{StaticResource SuccessBrush}"
-                                CornerRadius="20" 
-                                Width="40" 
-                                Height="40" 
-                                Margin="0,0,15,0">
-                            <TextBlock Text="2" 
-                                      Foreground="White" 
-                                      FontSize="16" 
-                                      FontWeight="Bold"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"/>
-                        </Border>
+                            <Border Grid.Column="0" 
+                                    Background="{StaticResource SuccessBrush}"
+                                    CornerRadius="20" 
+                                    Width="40" 
+                                    Height="40" 
+                                    Margin="0,0,15,0">
+                                <TextBlock Text="2" 
+                                          Foreground="White" 
+                                          FontSize="16" 
+                                          FontWeight="Bold"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
 
-                        <StackPanel Grid.Column="1" 
-                                   VerticalAlignment="Center">
-                            <TextBlock Text="👥 Conselho Editorial" 
-                                      FontSize="16" 
-                                      FontWeight="SemiBold"
-                                      Foreground="{StaticResource SuccessBrush}"
-                                      Margin="0,0,0,5"/>
-                            <TextBlock x:Name="txtFile2" 
-                                      Text="Lista dos membros do conselho editorial" 
-                                      FontSize="13"
-                                      Foreground="{StaticResource TextLightBrush}"/>
-                        </StackPanel>
+                            <StackPanel Grid.Column="1" 
+                                       VerticalAlignment="Center">
+                                <TextBlock Text="👥 Conselho Editorial" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold"
+                                          Foreground="{StaticResource SuccessBrush}"
+                                          Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtFile2" 
+                                          Text="Lista dos membros do conselho editorial" 
+                                          FontSize="13"
+                                          Foreground="{StaticResource TextLightBrush}"/>
+                            </StackPanel>
 
-                        <Button Grid.Column="2" 
-                                x:Name="btnSelect2"
-                                Content=" Selecionar "
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Click="SelectFile2_Click"/>
-                    </Grid>
-                </Border>
+                            <Button Grid.Column="2" 
+                                    x:Name="btnSelect2"
+                                    Content=" Selecionar "
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Click="SelectFile2_Click"/>
+                        </Grid>
+                    </Border>
 
-                <!-- Documento 3 - Editorial -->
-                <Border Background="{StaticResource WarningLightBrush}" 
-                        CornerRadius="8" 
-                        Padding="20"
-                        Margin="0,0,0,20"
-                        BorderBrush="{StaticResource WarningBrush}"
-                        BorderThickness="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- Documento 3 - Editorial -->
+                    <Border Background="{StaticResource WarningLightBrush}" 
+                            CornerRadius="8" 
+                            Padding="20"
+                            Margin="0,0,0,20"
+                            BorderBrush="{StaticResource WarningBrush}"
+                            BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" 
-                                Background="{StaticResource WarningBrush}"
-                                CornerRadius="20" 
-                                Width="40" 
-                                Height="40" 
-                                Margin="0,0,15,0">
-                            <TextBlock Text="3" 
-                                      Foreground="White" 
-                                      FontSize="16" 
-                                      FontWeight="Bold"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"/>
-                        </Border>
+                            <Border Grid.Column="0" 
+                                    Background="{StaticResource WarningBrush}"
+                                    CornerRadius="20" 
+                                    Width="40" 
+                                    Height="40" 
+                                    Margin="0,0,15,0">
+                                <TextBlock Text="3" 
+                                          Foreground="White" 
+                                          FontSize="16" 
+                                          FontWeight="Bold"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
 
-                        <StackPanel Grid.Column="1" 
-                                   VerticalAlignment="Center">
-                            <TextBlock Text="✍️ Editorial" 
-                                      FontSize="16" 
-                                      FontWeight="SemiBold"
-                                      Foreground="{StaticResource WarningBrush}"
-                                      Margin="0,0,0,5"/>
-                            <TextBlock x:Name="txtFile3" 
-                                      Text="Texto editorial da edição da revista" 
-                                      FontSize="13"
-                                      Foreground="{StaticResource TextLightBrush}"/>
-                        </StackPanel>
+                            <StackPanel Grid.Column="1" 
+                                       VerticalAlignment="Center">
+                                <TextBlock Text="✍️ Editorial" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold"
+                                          Foreground="{StaticResource WarningBrush}"
+                                          Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtFile3" 
+                                          Text="Texto editorial da edição da revista" 
+                                          FontSize="13"
+                                          Foreground="{StaticResource TextLightBrush}"/>
+                            </StackPanel>
 
-                        <Button Grid.Column="2" 
-                                x:Name="btnSelect3"
-                                Content=" Selecionar "
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Click="SelectFile3_Click"/>
-                    </Grid>
-                </Border>
+                            <Button Grid.Column="2" 
+                                    x:Name="btnSelect3"
+                                    Content=" Selecionar "
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Click="SelectFile3_Click"/>
+                        </Grid>
+                    </Border>
 
-                <!-- Status Area -->
-                <Border x:Name="statusBorder"
-                        Background="{StaticResource ErrorLightBrush}" 
-                        BorderBrush="{StaticResource ErrorBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8" 
-                        Padding="20"
-                        Margin="0,10,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="statusIcon"
-                                  Text="⚠️" 
-                                  FontSize="16" 
-                                  Margin="0,0,10,0"
-                                  VerticalAlignment="Center"/>
-                        <StackPanel>
-                            <TextBlock x:Name="txtStatus" 
-                                      Text="Selecione todos os 3 documentos para prosseguir"
-                                      FontSize="14"
-                                      FontWeight="SemiBold"
-                                      Foreground="{StaticResource ErrorBrush}"/>
-                            <TextBlock x:Name="txtStatusDetail"
-                                      Text="Faltam: Capa, Conselho Editorial e Editorial"
-                                      FontSize="12"
-                                      Foreground="{StaticResource TextLightBrush}"
-                                      Margin="0,2,0,0"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </Border>
+                    <!-- Title Input -->
+                    <Border Background="{StaticResource InfoLightBrush}" 
+                            CornerRadius="8" 
+                            Padding="20"
+                            Margin="0,0,0,20"
+                            BorderBrush="{StaticResource InfoBrush}"
+                            BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-        <!-- Footer -->
-        <Border Grid.Row="2" 
-                Margin="0,30,0,0">
-            <Button x:Name="btnProceed"
-                    Content="  🚀 Prosseguir  "
-                    Style="{StaticResource ModernButtonStyle}"
-                    FontSize="16"
-                    Padding="30,15"
-                    HorizontalAlignment="Center"
-                    IsEnabled="False"
-                    Click="Proceed_Click"/>
-        </Border>
-    </Grid>
+                            <Border Grid.Column="0" 
+                                    Background="{StaticResource InfoBrush}"
+                                    CornerRadius="20" 
+                                    Width="40" 
+                                    Height="40" 
+                                    Margin="0,0,15,0">
+                                <TextBlock Text="📝" 
+                                          Foreground="White" 
+                                          FontSize="16" 
+                                          FontWeight="Bold"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="📝 Título da Revista" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold"
+                                          Foreground="{StaticResource InfoBrush}"
+                                          Margin="0,0,0,10"/>
+                                <TextBox x:Name="txtTitle"
+                                         Style="{StaticResource ModernTextBoxStyle}"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         Height="60"
+                                         VerticalContentAlignment="Top"
+                                         TextChanged="TxtTitle_TextChanged"
+                                         ToolTip="Digite o título completo da revista"/>
+                                <TextBlock Text="Digite o título completo da revista" 
+                                          FontSize="11"
+                                          Foreground="{StaticResource TextLightBrush}"
+                                          Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ISSN Input -->
+                    <Border Background="{StaticResource InfoLightBrush}" 
+                            CornerRadius="8" 
+                            Padding="20"
+                            Margin="0,0,0,20"
+                            BorderBrush="{StaticResource InfoBrush}"
+                            BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                                    Background="{StaticResource InfoBrush}"
+                                    CornerRadius="20" 
+                                    Width="40" 
+                                    Height="40" 
+                                    Margin="0,0,15,0">
+                                <TextBlock Text="🔢" 
+                                          Foreground="White" 
+                                          FontSize="16" 
+                                          FontWeight="Bold"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="🔢 ISSN da Revista" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold"
+                                          Foreground="{StaticResource InfoBrush}"
+                                          Margin="0,0,0,10"/>
+                                <TextBox x:Name="txtISSN"
+                                         Style="{StaticResource ModernTextBoxStyle}"
+                                         MaxLength="9"
+                                         TextChanged="TxtISSN_TextChanged"
+                                         PreviewTextInput="TxtISSN_PreviewTextInput"
+                                         ToolTip="Formato: xxxx-xxxx (apenas números)"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Formato: xxxx-xxxx (apenas números)" 
+                                              FontSize="11"
+                                              Foreground="{StaticResource TextLightBrush}"/>
+                                    <TextBlock x:Name="txtISSNValidation"
+                                              FontSize="11"
+                                              Margin="10,0,0,0"
+                                              FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Footer with Proceed Button -->
+            <Border Grid.Row="2" 
+                    Margin="0,30,0,0">
+                <Button x:Name="btnProceed"
+                        Content="  🚀 Prosseguir  "
+                        Style="{StaticResource ModernButtonStyle}"
+                        FontSize="16"
+                        Padding="30,15"
+                        HorizontalAlignment="Center"
+                        IsEnabled="False"
+                        Click="Proceed_Click"/>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </Window>

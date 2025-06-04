@@ -26,6 +26,8 @@ using OpenXmlStyle = DocumentFormat.OpenXml.Wordprocessing.Style;
 
 namespace DocumentUploader
 {
+    // REPLACE the existing constructor and add these new properties in CompileDocumentsWindow.xaml.cs
+
     public partial class CompileDocumentsWindow : Window, IDropTarget, INotifyPropertyChanged
     {
         public ObservableCollection<string> SelectedFiles { get; set; }
@@ -34,6 +36,10 @@ namespace DocumentUploader
         private string capaFilePath;
         private string conselhoFilePath;
         private string editorialFilePath;
+
+        // NEW: Novos campos recebidos do formulário anterior
+        private string magazineTitle;
+        private string magazineISSN;
 
         // Path da ficha técnica (automaticamente detectado)
         private string GetFichaTecnicaPath()
@@ -83,15 +89,17 @@ namespace DocumentUploader
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // Construtor que recebe os ficheiros do formulário anterior
-        public CompileDocumentsWindow(string capa, string conselho, string editorial)
+        // UPDATED: Construtor atualizado que recebe os novos parâmetros
+        public CompileDocumentsWindow(string capa, string conselho, string editorial, string title, string issn)
         {
             InitializeComponent();
 
-            // Guardar os ficheiros recebidos
+            // Guardar os ficheiros e novos dados recebidos
             capaFilePath = capa;
             conselhoFilePath = conselho;
             editorialFilePath = editorial;
+            magazineTitle = title ?? "TMQ - Técnicas, Metodologias e Qualidade";
+            magazineISSN = issn ?? "1647-9440";
 
             SelectedFiles = new ObservableCollection<string>();
             filesListBox.ItemsSource = SelectedFiles;
@@ -102,11 +110,15 @@ namespace DocumentUploader
             progressTimer.Interval = TimeSpan.FromMilliseconds(50);
             progressTimer.Tick += ProgressTimer_Tick;
 
-            UpdateStatus($"Ficheiros base carregados. Adicione os artigos para compilar a revista.");
+            UpdateStatus($"Ficheiros base carregados. Revista: '{magazineTitle}' (ISSN: {magazineISSN}). Adicione os artigos para compilar.");
 
             // Mostrar os ficheiros já carregados
             UpdateLoadedFilesDisplay();
         }
+
+        // NEW: Propriedades públicas para acesso aos novos dados
+        public string MagazineTitle => magazineTitle;
+        public string MagazineISSN => magazineISSN;
 
         private void UpdateLoadedFilesDisplay()
         {
@@ -365,6 +377,126 @@ namespace DocumentUploader
             }
         }
 
+        private void AddTableOfContents(Body body, List<ArticleInfo> articles)
+        {
+            // Title
+            Paragraph titleParagraph = new Paragraph();
+            titleParagraph.ParagraphProperties = new ParagraphProperties(
+                new ParagraphStyleId() { Val = "Heading1" }
+            );
+            Run titleRun = new Run(new Text("Índice"));
+            titleParagraph.Append(titleRun);
+            body.AppendChild(titleParagraph);
+
+            // Editorial entry
+            Paragraph editorialPara = new Paragraph();
+            Run editorialRun = new Run(new Text("Editorial"));
+            editorialRun.RunProperties = new RunProperties(new Bold());
+            editorialPara.Append(editorialRun);
+
+            // Add page number (placeholder)
+            editorialPara.Append(new Run(new Text(" ................... ")));
+            editorialPara.Append(new Run(new Text("XX")));
+            body.AppendChild(editorialPara);
+
+            // Article entries
+            foreach (var article in articles)
+            {
+                // Article title with page number
+                Paragraph articlePara = new Paragraph();
+                Run articleRun = new Run(new Text(article.Title));
+                articleRun.RunProperties = new RunProperties(new Bold());
+                articlePara.Append(articleRun);
+
+                // Add page number (placeholder)
+                articlePara.Append(new Run(new Text(" ................... ")));
+                articlePara.Append(new Run(new Text("XX")));
+                body.AppendChild(articlePara);
+
+                // Authors below title
+                if (article.Authors.Count > 0)
+                {
+                    Paragraph authorsPara = new Paragraph();
+                    authorsPara.ParagraphProperties = new ParagraphProperties(
+                        new Indentation() { Left = "720" } // Indent authors
+                    );
+                    string authorNames = string.Join(", ", article.Authors.Select(a => a.Nome));
+                    Run authorsRun = new Run(new Text(authorNames));
+                    authorsRun.RunProperties = new RunProperties(new Italic());
+                    authorsPara.Append(authorsRun);
+                    body.AppendChild(authorsPara);
+                }
+            }
+        }
+
+        private void AddArticleWithHeading(Body body, string filePath, string title, List<Author> authors)
+        {
+            // Article title with Heading1 style
+            Paragraph titleParagraph = new Paragraph();
+            titleParagraph.ParagraphProperties = new ParagraphProperties(
+                new ParagraphStyleId() { Val = "Heading1" }
+            );
+            Run titleRun = new Run(new Text(title));
+            titleParagraph.Append(titleRun);
+            body.AppendChild(titleParagraph);
+
+            // Authors in italic (nome 1, nome 2, nome 3)
+            if (authors.Count > 0)
+            {
+                Paragraph authorParagraph = new Paragraph();
+                Run authorRun = new Run();
+                authorRun.RunProperties = new RunProperties(new Italic());
+                string authorNames = string.Join(", ", authors.Select(a => a.Nome));
+                authorRun.Append(new Text(authorNames));
+                authorParagraph.Append(authorRun);
+                authorParagraph.ParagraphProperties = new ParagraphProperties(
+                    new SpacingBetweenLines() { After = "240" }
+                );
+                body.AppendChild(authorParagraph);
+            }
+
+            // Article content
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            {
+                try
+                {
+                    using (WordprocessingDocument articleDoc = WordprocessingDocument.Open(filePath, false))
+                    {
+                        if (articleDoc.MainDocumentPart != null && articleDoc.MainDocumentPart.Document.Body != null)
+                        {
+                            var elements = articleDoc.MainDocumentPart.Document.Body.Elements().ToList();
+
+                            // Skip the original title and author paragraphs when copying content
+                            int startIndex = Math.Min(authors.Count + 1, elements.Count);
+
+                            for (int i = startIndex; i < elements.Count; i++)
+                            {
+                                body.AppendChild(elements[i].CloneNode(true));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Paragraph errorPara = new Paragraph(new Run(new Text($"Erro ao carregar conteúdo: {ex.Message}")));
+                    body.AppendChild(errorPara);
+                }
+            }
+        }
+
+        private void AddPageBreak(Body body)
+        {
+            body.AppendChild(new Paragraph(new Run(new Break { Type = BreakValues.Page })));
+        }
+
+        private void AddSettingsToDocument(MainDocumentPart mainPart)
+        {
+            DocumentSettingsPart settingsPart = mainPart.AddNewPart<DocumentSettingsPart>();
+            Settings settings = new Settings();
+            settings.Append(new UpdateFieldsOnOpen() { Val = true });
+            settingsPart.Settings = settings;
+        }
+
         // Adicione este método para teste manual (pode remover depois)
         private void TestAddFiles()
         {
@@ -601,122 +733,147 @@ namespace DocumentUploader
 
         // SUBSTITUA o método CreateRevistaDocument e métodos relacionados
 
+        // Código original do método CreateRevistaDocument restaurado
+
         private void CreateRevistaDocument(string outputPath)
         {
             debugTerminal?.WriteLine("📄 Criando documento Word...");
 
-            try
+            using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(outputPath, WordprocessingDocumentType.Document))
             {
-                // Garantir que a pasta de destino existe
-                string directory = Path.GetDirectoryName(outputPath);
-                if (!Directory.Exists(directory))
+                MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
+                mainPart.Document = new Document(new Body());
+                Body body = mainPart.Document.Body;
+
+                debugTerminal?.WriteLine("🎨 Definindo estilos do documento...");
+
+                // Define styles
+                StyleDefinitionsPart stylesPart = mainPart.AddNewPart<StyleDefinitionsPart>();
+                Styles styles = new Styles();
+                stylesPart.Styles = styles;
+                AddCustomStyles(styles);
+
+                debugTerminal?.WriteLine("🔍 Iniciando extração de informações dos artigos...");
+                debugTerminal?.WriteSeparator();
+
+                // Extract all authors and article info
+                articleAuthors.Clear();
+                var allAuthors = new List<Author>();
+                var articleInfoList = new List<ArticleInfo>();
+
+                int articleCount = 1;
+                foreach (var article in SelectedFiles)
                 {
-                    Directory.CreateDirectory(directory);
-                }
+                    debugTerminal?.WriteLine($"📖 Processando artigo {articleCount}/{SelectedFiles.Count}: {Path.GetFileName(article)}");
 
-                // Apagar ficheiro se já existir
-                if (File.Exists(outputPath))
-                {
-                    File.Delete(outputPath);
-                }
-
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(outputPath, WordprocessingDocumentType.Document))
-                {
-                    // Criar estrutura básica válida
-                    MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
-
-                    // Documento base
-                    mainPart.Document = new Document();
-                    Body body = new Body();
-                    mainPart.Document.AppendChild(body);
-
-                    debugTerminal?.WriteLine("🔍 Processando artigos...");
-
-                    // Processar informações dos artigos
-                    var allAuthors = new List<Author>();
-                    var articleInfoList = new List<ArticleInfo>();
-
-                    foreach (var article in SelectedFiles)
+                    var articleInfo = ExtractArticleInfo(article);
+                    if (articleInfo != null)
                     {
-                        var articleInfo = ExtractArticleInfoSafe(article);
-                        if (articleInfo != null)
+                        articleInfoList.Add(articleInfo);
+                        articleAuthors[article] = articleInfo.Authors;
+                        allAuthors.AddRange(articleInfo.Authors);
+
+                        debugTerminal?.WriteLineInfo($"   Título: {articleInfo.Title}");
+                        debugTerminal?.WriteLineInfo($"   Autores encontrados: {articleInfo.Authors.Count}");
+
+                        foreach (var author in articleInfo.Authors)
                         {
-                            articleInfoList.Add(articleInfo);
-                            allAuthors.AddRange(articleInfo.Authors);
+                            debugTerminal?.WriteLine($"     👤 {author.Nome}" +
+                                (!string.IsNullOrEmpty(author.Email) ? $" ({author.Email})" : "") +
+                                (!string.IsNullOrEmpty(author.Escola) ? $" - {author.Escola}" : ""));
                         }
                     }
-
-                    // Remover autores duplicados
-                    allAuthors = allAuthors.GroupBy(a => a.Email ?? a.Nome)
-                        .Select(g => g.First())
-                        .OrderBy(a => a.Nome)
-                        .ToList();
-
-                    debugTerminal?.WriteLine("📑 Construindo documento...");
-
-                    // 1. CAPA
-                    debugTerminal?.WriteLine("1️⃣ Capa");
-                    AddSimpleSection(body, "CAPA DA REVISTA", ReadFileContent(capaFilePath));
-                    AddSimplePageBreak(body);
-
-                    // 2. PÁGINA EM BRANCO
-                    debugTerminal?.WriteLine("2️⃣ Página em Branco");
-                    AddSimpleParagraph(body, "");
-                    AddSimplePageBreak(body);
-
-                    // 3. FICHA TÉCNICA
-                    debugTerminal?.WriteLine("3️⃣ Ficha Técnica");
-                    string fichaTecnicaContent = ReadFileContent(GetFichaTecnicaPath());
-                    if (string.IsNullOrEmpty(fichaTecnicaContent))
+                    else
                     {
-                        fichaTecnicaContent = "Ficha Técnica - Ficheiro não encontrado";
-                    }
-                    AddSimpleSection(body, "FICHA TÉCNICA", fichaTecnicaContent);
-                    AddSimplePageBreak(body);
-
-                    // 4. CONSELHO EDITORIAL
-                    debugTerminal?.WriteLine("4️⃣ Conselho Editorial");
-                    AddSimpleSection(body, "CONSELHO EDITORIAL", ReadFileContent(conselhoFilePath));
-                    AddSimplePageBreak(body);
-
-                    // 5. LISTA DE AUTORES
-                    debugTerminal?.WriteLine("5️⃣ Lista de Autores");
-                    AddAuthorListSimple(body, allAuthors);
-                    AddSimplePageBreak(body);
-
-                    // 6. ÍNDICE
-                    debugTerminal?.WriteLine("6️⃣ Índice");
-                    AddIndexSimple(body, articleInfoList);
-                    AddSimplePageBreak(body);
-
-                    // 7. EDITORIAL
-                    debugTerminal?.WriteLine("7️⃣ Editorial");
-                    AddSimpleSection(body, "EDITORIAL", ReadFileContent(editorialFilePath));
-                    AddSimplePageBreak(body);
-
-                    // 8. ARTIGOS
-                    debugTerminal?.WriteLine("8️⃣ Artigos");
-                    int count = 1;
-                    foreach (var article in articleInfoList)
-                    {
-                        debugTerminal?.WriteLine($"   Artigo {count}: {article.Title}");
-                        AddArticleSimple(body, article);
-                        AddSimplePageBreak(body);
-                        count++;
+                        debugTerminal?.WriteLineWarning($"   Falhou ao extrair informações do artigo");
                     }
 
-                    // Salvar documento
-                    debugTerminal?.WriteLine("💾 Salvando documento...");
-                    mainPart.Document.Save();
-
-                    debugTerminal?.WriteLineSuccess("✨ Documento criado com sucesso!");
+                    debugTerminal?.WriteLine("");
+                    articleCount++;
                 }
-            }
-            catch (Exception ex)
-            {
-                debugTerminal?.WriteLineError($"ERRO CRÍTICO: {ex.Message}");
-                debugTerminal?.WriteLineError($"Stack: {ex.StackTrace}");
-                throw new InvalidOperationException($"Falha ao criar documento: {ex.Message}", ex);
+
+                debugTerminal?.WriteSeparator();
+                debugTerminal?.WriteLine("👥 Processando lista de autores...");
+
+                // Remove duplicates from author list
+                int totalAuthors = allAuthors.Count;
+                allAuthors = allAuthors.GroupBy(a => a.Email ?? a.Nome)
+                    .Select(g => g.First())
+                    .OrderBy(a => a.Nome)
+                    .ToList();
+
+                debugTerminal?.WriteLineSuccess($"Lista de autores criada: {allAuthors.Count} autores únicos (de {totalAuthors} totais)");
+
+                foreach (var author in allAuthors)
+                {
+                    debugTerminal?.WriteLine($"  📝 {author.Nome}" +
+                        (!string.IsNullOrEmpty(author.Email) ? $" - {author.Email}" : "") +
+                        (!string.IsNullOrEmpty(author.Escola) ? $" - {author.Escola}" : ""));
+                }
+
+                debugTerminal?.WriteSeparator();
+                debugTerminal?.WriteLine("📑 Montando documento na ordem específica...");
+
+                // ORDEM SOLICITADA:
+                // 1. Capa
+                debugTerminal?.WriteLine("1️⃣ Adicionando Capa...");
+                AddDocument(body, capaFilePath, "Capa");
+                AddPageBreak(body);
+
+                // 2. Folha em Branco
+                debugTerminal?.WriteLine("2️⃣ Adicionando Página em Branco...");
+                AddBlankPage(body);
+                AddPageBreak(body);
+
+                // 3. Ficha Técnica
+                debugTerminal?.WriteLine("3️⃣ Adicionando Ficha Técnica...");
+                AddDocument(body, GetFichaTecnicaPath(), "Ficha Técnica");
+                AddPageBreak(body);
+
+                // 4. Conselho Editorial
+                debugTerminal?.WriteLine("4️⃣ Adicionando Conselho Editorial...");
+                AddDocument(body, conselhoFilePath, "Conselho Editorial");
+                AddPageBreak(body);
+
+                // 5. Lista de Autores
+                debugTerminal?.WriteLine("5️⃣ Adicionando Lista de Autores...");
+                AddAuthorList(body, allAuthors);
+                AddPageBreak(body);
+
+                // 6. Índice
+                debugTerminal?.WriteLine("6️⃣ Adicionando Índice...");
+                AddTableOfContents(body, articleInfoList);
+                AddPageBreak(body);
+
+                // 7. Editorial
+                debugTerminal?.WriteLine("7️⃣ Adicionando Editorial...");
+                AddArticleWithHeading(body, editorialFilePath, "Editorial", new List<Author>());
+                AddPageBreak(body);
+
+                // 8. Artigos
+                debugTerminal?.WriteLine("8️⃣ Adicionando Artigos...");
+                int artCount = 1;
+                foreach (var articleInfo in articleInfoList)
+                {
+                    debugTerminal?.WriteLine($"   📄 Artigo {artCount}/{articleInfoList.Count}: {articleInfo.Title}");
+                    AddArticleWithHeading(body, articleInfo.FilePath, articleInfo.Title, articleInfo.Authors);
+                    AddPageBreak(body);
+                    artCount++;
+                }
+
+                debugTerminal?.WriteLine("⚙️ Configurando atualização automática de campos...");
+                // Update fields (for TOC)
+                AddSettingsToDocument(mainPart);
+
+                debugTerminal?.WriteLine("💾 Salvando documento...");
+                mainPart.Document.Save();
+
+                debugTerminal?.WriteSeparator();
+                debugTerminal?.WriteLineSuccess("✨ Documento compilado com sucesso!");
+                debugTerminal?.WriteLine($"📊 Estatísticas finais:");
+                debugTerminal?.WriteLine($"   • Total de artigos: {articleInfoList.Count}");
+                debugTerminal?.WriteLine($"   • Total de autores únicos: {allAuthors.Count}");
+                debugTerminal?.WriteLine($"   • Localização: {outputPath}");
             }
         }
 
@@ -1246,88 +1403,6 @@ namespace DocumentUploader
             styles.Append(authorStyle);
         }
 
-        private ArticleInfo ExtractArticleInfo(string filePath)
-        {
-            var articleInfo = new ArticleInfo
-            {
-                FilePath = filePath,
-                Title = Path.GetFileNameWithoutExtension(filePath),
-                Authors = new List<Author>()
-            };
-
-            try
-            {
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
-                {
-                    if (wordDoc.MainDocumentPart != null && wordDoc.MainDocumentPart.Document.Body != null)
-                    {
-                        var paragraphs = wordDoc.MainDocumentPart.Document.Body.Elements<Paragraph>().ToList();
-                        debugTerminal?.WriteLineInfo($"     📄 Total de parágrafos encontrados: {paragraphs.Count}");
-
-                        // First paragraph is usually the title
-                        if (paragraphs.Count > 0)
-                        {
-                            string extractedTitle = paragraphs[0].InnerText.Trim();
-                            if (!string.IsNullOrEmpty(extractedTitle))
-                            {
-                                articleInfo.Title = extractedTitle;
-                                debugTerminal?.WriteLineInfo($"     📝 Título extraído: {extractedTitle}");
-                            }
-                        }
-
-                        // Find authors (before Abstract/Resumo)
-                        int abstractIndex = -1;
-                        for (int i = 0; i < paragraphs.Count; i++)
-                        {
-                            string text = paragraphs[i].InnerText.Trim();
-                            if (text.StartsWith("Resumo", StringComparison.OrdinalIgnoreCase) ||
-                                text.StartsWith("Abstract", StringComparison.OrdinalIgnoreCase))
-                            {
-                                abstractIndex = i;
-                                debugTerminal?.WriteLineInfo($"     🔍 Abstract/Resumo encontrado no parágrafo {i}");
-                                break;
-                            }
-                        }
-
-                        if (abstractIndex < 0)
-                        {
-                            abstractIndex = paragraphs.Count;
-                            debugTerminal?.WriteLineWarning($"     ⚠️ Abstract/Resumo não encontrado, processando até o final");
-                        }
-
-                        // Extract authors from paragraphs 1 to abstractIndex-1
-                        debugTerminal?.WriteLineInfo($"     👥 Procurando autores nos parágrafos 1 a {abstractIndex - 1}");
-                        for (int i = 1; i < abstractIndex && i < paragraphs.Count; i++)
-                        {
-                            string text = paragraphs[i].InnerText.Trim();
-                            if (!string.IsNullOrEmpty(text))
-                            {
-                                debugTerminal?.WriteLine($"       Parágrafo {i}: \"{text.Substring(0, Math.Min(text.Length, 50))}...\"");
-                                Author author = ParseAuthor(text);
-                                if (author != null)
-                                {
-                                    articleInfo.Authors.Add(author);
-                                    debugTerminal?.WriteLineSuccess($"       ✅ Autor extraído: {author.Nome}");
-                                }
-                                else
-                                {
-                                    debugTerminal?.WriteLine($"       ❌ Não foi possível extrair autor deste parágrafo");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                debugTerminal?.WriteLineError($"     ❌ Erro ao processar artigo: {ex.Message}");
-                MessageBox.Show($"Erro ao ler artigo {Path.GetFileName(filePath)}: {ex.Message}",
-                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return articleInfo;
-        }
-
         private Author ParseAuthor(string text)
         {
             var emailMatch = Regex.Match(text, @"\b[\w\.-]+@[\w\.-]+\.\w+\b");
@@ -1649,129 +1724,12 @@ namespace DocumentUploader
                 body.AppendChild(authorParagraph);
             }
         }
-
-        private void AddTableOfContents(Body body, List<ArticleInfo> articles)
-        {
-            // Title
-            Paragraph titleParagraph = new Paragraph();
-            titleParagraph.ParagraphProperties = new ParagraphProperties(
-                new ParagraphStyleId() { Val = "Heading1" }
-            );
-            Run titleRun = new Run(new Text("Índice"));
-            titleParagraph.Append(titleRun);
-            body.AppendChild(titleParagraph);
-
-            // Editorial entry
-            Paragraph editorialPara = new Paragraph();
-            Run editorialRun = new Run(new Text("Editorial"));
-            editorialRun.RunProperties = new RunProperties(new Bold());
-            editorialPara.Append(editorialRun);
-
-            // Add page number (placeholder)
-            editorialPara.Append(new Run(new Text(" ................... ")));
-            editorialPara.Append(new Run(new Text("XX")));
-            body.AppendChild(editorialPara);
-
-            // Article entries
-            foreach (var article in articles)
-            {
-                // Article title with page number
-                Paragraph articlePara = new Paragraph();
-                Run articleRun = new Run(new Text(article.Title));
-                articleRun.RunProperties = new RunProperties(new Bold());
-                articlePara.Append(articleRun);
-
-                // Add page number (placeholder)
-                articlePara.Append(new Run(new Text(" ................... ")));
-                articlePara.Append(new Run(new Text("XX")));
-                body.AppendChild(articlePara);
-
-                // Authors below title
-                if (article.Authors.Count > 0)
-                {
-                    Paragraph authorsPara = new Paragraph();
-                    authorsPara.ParagraphProperties = new ParagraphProperties(
-                        new Indentation() { Left = "720" } // Indent authors
-                    );
-                    string authorNames = string.Join(", ", article.Authors.Select(a => a.Nome));
-                    Run authorsRun = new Run(new Text(authorNames));
-                    authorsRun.RunProperties = new RunProperties(new Italic());
-                    authorsPara.Append(authorsRun);
-                    body.AppendChild(authorsPara);
-                }
-            }
-        }
-
-        private void AddArticleWithHeading(Body body, string filePath, string title, List<Author> authors)
-        {
-            // Article title with Heading1 style
-            Paragraph titleParagraph = new Paragraph();
-            titleParagraph.ParagraphProperties = new ParagraphProperties(
-                new ParagraphStyleId() { Val = "Heading1" }
-            );
-            Run titleRun = new Run(new Text(title));
-            titleParagraph.Append(titleRun);
-            body.AppendChild(titleParagraph);
-
-            // Authors in italic (nome 1, nome 2, nome 3)
-            if (authors.Count > 0)
-            {
-                Paragraph authorParagraph = new Paragraph();
-                Run authorRun = new Run();
-                authorRun.RunProperties = new RunProperties(new Italic());
-                string authorNames = string.Join(", ", authors.Select(a => a.Nome));
-                authorRun.Append(new Text(authorNames));
-                authorParagraph.Append(authorRun);
-                authorParagraph.ParagraphProperties = new ParagraphProperties(
-                    new SpacingBetweenLines() { After = "240" }
-                );
-                body.AppendChild(authorParagraph);
-            }
-
-            // Article content
-            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-            {
-                try
-                {
-                    using (WordprocessingDocument articleDoc = WordprocessingDocument.Open(filePath, false))
-                    {
-                        if (articleDoc.MainDocumentPart != null && articleDoc.MainDocumentPart.Document.Body != null)
-                        {
-                            var elements = articleDoc.MainDocumentPart.Document.Body.Elements().ToList();
-
-                            // Skip the original title and author paragraphs when copying content
-                            int startIndex = Math.Min(authors.Count + 1, elements.Count);
-
-                            for (int i = startIndex; i < elements.Count; i++)
-                            {
-                                body.AppendChild(elements[i].CloneNode(true));
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Paragraph errorPara = new Paragraph(new Run(new Text($"Erro ao carregar conteúdo: {ex.Message}")));
-                    body.AppendChild(errorPara);
-                }
-            }
-        }
-
-        private void AddPageBreak(Body body)
-        {
-            body.AppendChild(new Paragraph(new Run(new Break { Type = BreakValues.Page })));
-        }
-
-        private void AddSettingsToDocument(MainDocumentPart mainPart)
-        {
-            DocumentSettingsPart settingsPart = mainPart.AddNewPart<DocumentSettingsPart>();
-            Settings settings = new Settings();
-            settings.Append(new UpdateFieldsOnOpen() { Val = true });
-            settingsPart.Settings = settings;
-        }
+        
 
         private DebugTerminalWindow? debugTerminal;
-        private const bool SHOW_DEBUG_TERMINAL = true; // ou false, conforme desejado
+
+        // Se necessário para desenvolvimento trocar o falso para true
+        private const bool SHOW_DEBUG_TERMINAL = false;
 
         private void filesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

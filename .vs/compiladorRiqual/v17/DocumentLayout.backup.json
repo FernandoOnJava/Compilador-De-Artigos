@@ -3,8 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\compiledocumentswindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\compiledocumentswindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\compiledocumentswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\compiledocumentswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\debugterminalwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\debugterminalwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|c:\\users\\ferna\\desenvolvimento\\compiladorriqual\\compiladorriqual\\debugterminalwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4980AA34-7767-4ECF-877A-BF56575DDC42}|compiladorRiqual\\compiladorRiqual.csproj|solutionrelative:compiladorriqual\\debugterminalwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +34,78 @@
       "DocumentGroups": [
         {
           "DockedWidth": 198,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DebugTerminalWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\DebugTerminalWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\DebugTerminalWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\DebugTerminalWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\DebugTerminalWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-06-03T14:41:33.723Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "CompileDocumentsWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\CompileDocumentsWindow.xaml.cs",
+              "RelativeDocumentMoniker": "compiladorRiqual\\CompileDocumentsWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\CompileDocumentsWindow.xaml.cs",
+              "RelativeToolTip": "compiladorRiqual\\CompileDocumentsWindow.xaml.cs",
+              "ViewState": "AgIAAPECAAAAAAAAAAAEwAADAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-03T09:02:17.559Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "compiladorRiqual\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml.cs",
+              "RelativeToolTip": "compiladorRiqual\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAK0AAAAAAAAAAAAAwP4AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-03T09:00:03.242Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\MainWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-06-03T08:58:33.555Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DebugTerminalWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\DebugTerminalWindow.xaml",
+              "RelativeDocumentMoniker": "compiladorRiqual\\DebugTerminalWindow.xaml",
+              "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\DebugTerminalWindow.xaml",
+              "RelativeToolTip": "compiladorRiqual\\DebugTerminalWindow.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-06-03T14:41:45.741Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "CompileDocumentsWindow.xaml",
               "DocumentMoniker": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\CompileDocumentsWindow.xaml",
               "RelativeDocumentMoniker": "compiladorRiqual\\CompileDocumentsWindow.xaml",
               "ToolTip": "C:\\Users\\ferna\\Desenvolvimento\\compiladorRiqual\\compiladorRiqual\\CompileDocumentsWindow.xaml",
               "RelativeToolTip": "compiladorRiqual\\CompileDocumentsWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-06-02T09:59:18.646Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-02T09:59:18.646Z"
             }
           ]
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 
@@ -9,10 +11,12 @@ namespace DocumentUploader
 {
     public partial class MainWindow : Window
     {
-        // Propriedades públicas para acesso aos ficheiros
+        // Propriedades públicas para acesso aos ficheiros e novos campos
         public string File1Path { get; private set; }
         public string File2Path { get; private set; }
         public string File3Path { get; private set; }
+        public string Title { get; private set; }
+        public string ISSN { get; private set; }
 
         public MainWindow()
         {
@@ -22,8 +26,14 @@ namespace DocumentUploader
             File1Path = string.Empty;
             File2Path = string.Empty;
             File3Path = string.Empty;
+            Title = string.Empty;
+            ISSN = string.Empty;
 
-            UpdateStatus();
+            // Call validation and status update after UI is fully loaded
+            this.Loaded += (s, e) =>
+            {
+                UpdateButtonState();
+            };
         }
 
         private void SelectFile1_Click(object sender, RoutedEventArgs e)
@@ -34,7 +44,7 @@ namespace DocumentUploader
                 File1Path = filePath;
                 txtFile1.Text = $"✅ {Path.GetFileName(filePath)}";
                 txtFile1.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
-                UpdateStatus();
+                UpdateButtonState();
             }
         }
 
@@ -46,7 +56,7 @@ namespace DocumentUploader
                 File2Path = filePath;
                 txtFile2.Text = $"✅ {Path.GetFileName(filePath)}";
                 txtFile2.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
-                UpdateStatus();
+                UpdateButtonState();
             }
         }
 
@@ -58,8 +68,93 @@ namespace DocumentUploader
                 File3Path = filePath;
                 txtFile3.Text = $"✅ {Path.GetFileName(filePath)}";
                 txtFile3.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
-                UpdateStatus();
+                UpdateButtonState();
             }
+        }
+
+        private void TxtTitle_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            try
+            {
+                if (txtTitle != null)
+                {
+                    Title = txtTitle.Text.Trim();
+                    UpdateButtonState();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in TxtTitle_TextChanged: {ex.Message}");
+            }
+        }
+
+        private void TxtISSN_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            try
+            {
+                if (txtISSN != null)
+                {
+                    ISSN = txtISSN.Text.Trim();
+                    ValidateISSN();
+                    UpdateButtonState();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in TxtISSN_TextChanged: {ex.Message}");
+            }
+        }
+
+        private void TxtISSN_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            try
+            {
+                // Permitir apenas números e hífen
+                var regex = new Regex("[^0-9-]");
+                e.Handled = regex.IsMatch(e.Text);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in TxtISSN_PreviewTextInput: {ex.Message}");
+                e.Handled = false; // Allow input if there's an error
+            }
+        }
+
+        private void ValidateISSN()
+        {
+            // Check if UI element exists
+            if (txtISSNValidation == null)
+                return;
+
+            if (string.IsNullOrEmpty(ISSN))
+            {
+                txtISSNValidation.Text = "";
+                txtISSNValidation.Foreground = new SolidColorBrush(Colors.Gray);
+                return;
+            }
+
+            // Verificar se o formato está correto: xxxx-xxxx
+            var issnRegex = new Regex(@"^\d{4}-\d{4}$");
+
+            if (issnRegex.IsMatch(ISSN))
+            {
+                txtISSNValidation.Text = "✅ Válido";
+                txtISSNValidation.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
+            }
+            else
+            {
+                txtISSNValidation.Text = "❌ Inválido";
+                txtISSNValidation.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E74C3C"));
+            }
+        }
+
+        private bool IsISSNValid()
+        {
+            if (string.IsNullOrEmpty(ISSN))
+                return false;
+
+            var issnRegex = new Regex(@"^\d{4}-\d{4}$");
+            return issnRegex.IsMatch(ISSN);
         }
 
         private string SelectDocxFile(string title)
@@ -80,47 +175,27 @@ namespace DocumentUploader
             return string.Empty;
         }
 
-        private void UpdateStatus()
+        // Simplified method to just update the button state
+        private void UpdateButtonState()
         {
-            int filesSelected = 0;
-            var missingFiles = new List<string>();
-
-            if (!string.IsNullOrEmpty(File1Path))
-                filesSelected++;
-            else
-                missingFiles.Add("Capa");
-
-            if (!string.IsNullOrEmpty(File2Path))
-                filesSelected++;
-            else
-                missingFiles.Add("Conselho Editorial");
-
-            if (!string.IsNullOrEmpty(File3Path))
-                filesSelected++;
-            else
-                missingFiles.Add("Editorial");
-
-            if (filesSelected == 3)
+            try
             {
-                // Todos os documentos selecionados
-                txtStatus.Text = "✅ Todos os documentos foram selecionados!";
-                txtStatusDetail.Text = "Pronto para adicionar artigos e compilar a revista";
-                statusBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8F5E8"));
-                statusBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
-                statusIcon.Text = "✅";
-                txtStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#27AE60"));
-                btnProceed.IsEnabled = true;
+                // Check if button element exists
+                if (btnProceed == null)
+                    return;
+
+                // Check if all required fields are completed
+                bool allFieldsComplete = !string.IsNullOrEmpty(File1Path) &&
+                                       !string.IsNullOrEmpty(File2Path) &&
+                                       !string.IsNullOrEmpty(File3Path) &&
+                                       !string.IsNullOrEmpty(Title) &&
+                                       IsISSNValid();
+
+                btnProceed.IsEnabled = allFieldsComplete;
             }
-            else
+            catch (Exception ex)
             {
-                // Documentos em falta
-                txtStatus.Text = $"Selecione todos os 3 documentos para prosseguir ({filesSelected}/3)";
-                txtStatusDetail.Text = $"Faltam: {string.Join(", ", missingFiles)}";
-                statusBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFE6E6"));
-                statusBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E74C3C"));
-                statusIcon.Text = "⚠️";
-                txtStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E74C3C"));
-                btnProceed.IsEnabled = false;
+                System.Diagnostics.Debug.WriteLine($"Error in UpdateButtonState: {ex.Message}");
             }
         }
 
@@ -147,8 +222,24 @@ namespace DocumentUploader
                     return;
                 }
 
-                // Abrir o formulário de compilação passando os ficheiros selecionados
-                var compileWindow = new CompileDocumentsWindow(File1Path, File2Path, File3Path);
+                // Verificar título
+                if (string.IsNullOrEmpty(Title))
+                {
+                    MessageBox.Show("❌ Por favor, insira o título da revista!", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    txtTitle.Focus();
+                    return;
+                }
+
+                // Verificar ISSN
+                if (!IsISSNValid())
+                {
+                    MessageBox.Show("❌ Por favor, insira um ISSN válido no formato xxxx-xxxx!", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    txtISSN.Focus();
+                    return;
+                }
+
+                // Abrir o formulário de compilação passando todos os parâmetros
+                var compileWindow = new CompileDocumentsWindow(File1Path, File2Path, File3Path, Title, ISSN);
                 compileWindow.Show();
 
                 // Fechar esta janela
